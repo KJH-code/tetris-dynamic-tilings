@@ -1,0 +1,9 @@
+# bag1 = TJLISZO, 선별에서 걸린 bag2 후보 6 개를 fix4 로 완결한 결과.
+# 명령: ./bin/fix4 TJLISZO<bag2> 200000000   (2026-09-15)
+# 예비 솔버(fix2)로 만든 tjliszo-840.out 에서는 이 6 개가 전부 CAP 였다.
+TJLISZOOJZS : no PC   (states 36891439)
+TJLISZOOLZS : no PC   (states 36824530)
+TJLISZOLOZS : no PC   (states 53417670)
+TJLISZOJOZS : no PC   (states 54046679)
+TJLISZOSLOZ : PC POSSIBLE   (states 22581411)
+TJLISZOLSOZ : PC POSSIBLE   (states 30349604)

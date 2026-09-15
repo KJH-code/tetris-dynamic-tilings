@@ -1,0 +1,7 @@
+# bag1 = IOTSZJL, b2all.out 에서 CAP(상한 3M) 였던 4 건을 fix4 로 완결한 결과.
+# 명령: ./bin/fix4 IOTSZJL<bag2> 200000000   (2026-09-15)
+# 네 건 모두 가능이므로 이 bag1 은 840/840 이다.
+IOTSZJLOJSZ : PC POSSIBLE   (states 299678)
+IOTSZJLJOSZ : PC POSSIBLE   (states 352080)
+IOTSZJLJSOZ : PC POSSIBLE   (states 335213)
+IOTSZJLJSZO : PC POSSIBLE   (states 334093)

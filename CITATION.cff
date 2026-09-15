@@ -1,0 +1,10 @@
+cff-version: 1.2.0
+title: Tetromino tilings with line clears
+message: If you use this work, please cite it.
+type: software
+authors:
+  - given-names: Jaehyeok
+    family-names: Kim
+repository-code: https://github.com/KJH-code/tetris-dynamic-tilings
+license: MIT
+date-released: 2026-09-15

@@ -12,6 +12,8 @@ README.md 는 이 노트들을 영어로 압축한 것이다.
 - `t-parity-ko.md`          동적 T-패리티 항등식과 전수 검증
 - `seven-bag-ko.md`         7-bag 제약 하의 최소 조각 수 (폭 4..16)
 - `seven-bag-order-ko.md`   7-bag 순서 제약 (bag1 x bag2 고정)
+- `decisions-ko.md`         결정·오류 수정 기록 (볼트 Decisions.md 사본)
+- `ledger-ko.md`            검산 대장 — 모든 숫자의 재현 명령 (볼트 사본)
 
 ## 검산 규칙
 

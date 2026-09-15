@@ -36,7 +36,9 @@ MIT Hardness Group 이 2026 년에 단일 조각 복잡도를 다뤘으므로 �
   T 만으로 w x n 직사각형을 덮을 수 있는 필요충분조건은 w, n 이 둘 다 4 의 배수.
   우리 C 의 정면 대비 대상. **논문의 진입점.**
 
-- **Hochberg 2015**, The Gap Number of the T-Tetromino, arXiv:1403.6730.
+- **Hochberg 2015**, The Gap Number of the T-Tetromino,
+  Discrete Math. 338 (2015) 130-138, arXiv:1403.6730. (서지 2026-09-15 확인)
+  gap number 를 5, 6, 7, 9 중 하나로 좁혔다.
   Walkup 조건을 못 맞추는 직사각형에 모노미노를 허용했을 때 최소 개수 M(w,n).
   fringe digraph + Bellman-Ford 로 하한 증명:
       폭 5  -> 5 열마다 모노미노 최소 1 개
@@ -49,7 +51,8 @@ MIT Hardness Group 이 2026 년에 단일 조각 복잡도를 다뤘으므로 �
   우리의 S/Z 동적 불가능 정리와 같은 방향.
   참고: 이 논문 Theorem 1 은 고등학생 Madeline Sargent 가 증명했다고 감사문에 명시.
 
-- **Korn-Pak 2004**, Tilings of rectangles with T-tetrominoes, TCS 319.
+- **Korn-Pak 2004**, Tilings of rectangles with T-tetrominoes,
+  TCS 319 (2004) 3-27. (서지 2026-09-15 확인)
   4m x 4n 타일링의 local move connectivity, Tutte 다항식과의 연결. 높이함수 도입.
   미확인: 그 높이함수가 우리 phi 와 관계있는지. 정적이라 겹칠 확률은 낮음.
 
@@ -57,7 +60,8 @@ MIT Hardness Group 이 2026 년에 단일 조각 복잡도를 다뤘으므로 �
   mn = 1 (mod 4) 인 직사각형에서 모노미노 1 개만 남기는 것이 불가능함을 증명.
   원문 미확인. Hochberg 가 요약. 2 차 인용 가능.
 
-- **Reid 2005**, Klarner systems and tiling boxes with polyominoes, JCTA 111.
+- **Reid 2005**, Klarner systems and tiling boxes with polyominoes,
+  JCTA 111(1) (2005) 89-105. (서지 2026-09-15 확인)
   T 를 (8n-4)-omino 류로 일반화. 정적 프레임워크. 미확인이나 겹칠 확률 낮음.
 
 - 기타: Merino 2008 (4m x 4n 타일링 개수), Feller-Hochberg 2024 (등차수열),
@@ -76,6 +80,8 @@ MIT Hardness Group 이 2026 년에 단일 조각 복잡도를 다뤘으므로 �
 
 - **Hoogeboom-Kosters 2003/2004**, How to construct Tetris configurations,
   IJIGS 3(2), 97-105. (LIACS TR 2003-8)
+  **쪽수 미해결**: 2026-09-15 웹 검색은 94-102 로 나왔다. 이 노트와 README 는 97-105 다.
+  원문 PDF 와 dblp 접근이 차단돼 판정하지 못했고 어느 쪽도 고치지 않았다. 투고 전 확정 필요.
   **가장 인접한 선행연구.** Theorem 3: p 개 칸을 가진 배치가 빈 보드에서
   구성 가능할 필요충분조건은 (1) 꽉 찬 줄 없음 (2) 최상단 아래 빈 줄 없음
   (3) w = 0 (mod 4) 이면 p = 0 (mod 4); w = 2 (mod 4) 이면 p = 0 또는 2 (mod 4).
@@ -91,10 +97,13 @@ MIT Hardness Group 이 2026 년에 단일 조각 복잡도를 다뤘으므로 �
   Schutzenberger 방법론 + 확률생성함수로 평균 점수 분석. 오토마타 등가성.
   타일링·PC 와 무관. **겹치지 않음.**
 
-- **MIT Hardness Group 2026**, Tetris is Hard with Just One Piece Type, arXiv:2603.09958.
+- **MIT Hardness Group 2026**, Tetris is Hard with Just One Piece Type,
+  **FUN 2026 (LIPIcs vol. 366, art. 32)**, arXiv:2603.09958. (서지 2026-09-15 확인)
   O 를 제외한 모든 테트로미노 P 에 대해, SRS 하에서 P 만으로
   **초기 보드가 주어진** clearing / survival 이 NP-hard.
-  23 년 된 추측을 반증. 도미노는 다항시간.
+  I 조각에 대한 23 년 된 추측을 반증. 도미노는 다항시간.
+  **따름정리로 7k-bag 랜더마이저 하의 Tetris clearing NP-hard 가 들어 있다** —
+  우리 D 절과 직접 닿는 유일한 최신 문헌이므로 논문에서 반드시 언급할 것.
   -> 문제가 다르다: 그들은 **주어진 보드의 복잡도**, 우리는 **빈 보드에서의 가능성**.
   **겹치지 않음. 단일 조각 각도가 현재 활발하다는 증거로 인용.**
 

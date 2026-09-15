@@ -19,13 +19,20 @@ is a play from the empty board back to the empty board.
 |---|---|---|
 | I | 4 | every width |
 | O | ∞ | even widths only |
-| T | ≤ 6 | every width, `n = w` pieces |
+| T | ≤ 6 | `n = w` pieces; widths 4–12 verified by search, general width open |
 | J, L | 4 | every width |
 | **S, Z** | conjectured ∞ | **never, at any width** |
 
 S and Z are the only tetrominoes that line clears cannot rescue. The classification
-extends to piece sets: the only unusable pair is `{S, Z}`, and every set of three or
-more types works.
+extends to every subset of the seven types:
+
+> A piece set `P` admits a perfect clear at width `w` if and only if `P` contains one
+> of `I`, `T`, `J`, `L`, or `w` is even and `O ∈ P`.
+
+So the only unusable pair is `{S, Z}`, `{O, S}` and `{O, Z}` need even width, and
+`{O, S, Z}` — three types — still fails at every odd width, because those three
+pieces have the same column profiles as `S` alone and the counting argument does not
+care how many of them you are given.
 
 ## Results
 

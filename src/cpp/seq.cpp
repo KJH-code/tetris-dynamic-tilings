@@ -1,3 +1,6 @@
+// 조각 수열이 고정됐을 때 (홀드 없음, 하드드롭 전용) 퍼펙트 클리어를 찾고 단계별 보드를 출력한다.
+// 입력: argv[1]=폭 w, argv[2]=조각 문자열 (I O T S Z J L 문자, 예 OTJ).
+// 출력: "PERFECT CLEAR FOUND" + step 별 배치와 보드, 또는 "NO perfect clear".
 #include <bits/stdc++.h>
 using namespace std;
 typedef unsigned __int128 bb;

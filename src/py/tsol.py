@@ -1,3 +1,6 @@
+# T 단독의 열 카운트 해를 폭별로 전부 열거한다 (정리 3 의 n = w 가 어디서 오는지 보이는 자리).
+# 입력: 없음 (파일 안의 폭 목록). 출력: 폭별 R, n 과 해 목록 (가로 T 개수 horiz 를 함께 표시).
+# 기하 실현 여부는 w7why.py 가 따로 본다.
 import itertools
 
 # T profiles: horizontal (1,2,1), vertical-nub-left (1,3), vertical-nub-right (3,1)

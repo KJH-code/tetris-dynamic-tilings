@@ -1,3 +1,6 @@
+// 폭 w 에서 n 조각으로, T 개수의 홀짝이 지정값인 퍼펙트 클리어를 찾는다 (BFS, 하드드롭 전용).
+// 입력: argv[1]=w, argv[2]=n, argv[3]=조각 마스크 (I O T S Z J L = 비트 0..6, 기본 127), argv[4]=원하는 #T 홀짝 (기본 1).
+// 출력: "FOUND perfect clear" + 단계별 보드, 또는 "NO perfect clear". 좌우 정규화는 마스크가 거울에 닫힐 때만 켠다.
 #include <bits/stdc++.h>
 using namespace std;
 typedef unsigned __int128 bb;

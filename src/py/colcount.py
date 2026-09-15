@@ -1,3 +1,6 @@
+# 보조정리 0 (열 카운팅) 의 전이 DP: 조각·폭별로 열 카운트 해가 존재하는 최소 R 을 구한다.
+# 입력: 없음 (파일 안의 widths, R 상한). 출력: 조각 x 폭 표. R = "-" 는 어떤 R 에서도 해가 없다는 뜻.
+# 기하는 보지 않으므로 여기서 "가능" 은 필요조건일 뿐이다 (S, Z 가 정확히 그 틈에서 죽는다).
 import itertools, sys
 from functools import lru_cache
 

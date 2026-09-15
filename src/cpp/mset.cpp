@@ -1,3 +1,6 @@
+// 주어진 조각 multiset 으로 퍼펙트 클리어가 가능한지 판정한다 (조각 순서 자유, 하드드롭 전용).
+// 입력: argv[1]=폭 w, argv[2]=I O T S Z J L 순서의 7 자리 개수 (예 1111222).
+// 출력: "w=.. counts=.. n=.. R=.. : PC POSSIBLE" 또는 "... : no PC".
 #include <bits/stdc++.h>
 using namespace std;
 typedef unsigned __int128 bb;

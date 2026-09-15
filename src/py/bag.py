@@ -1,3 +1,6 @@
+# mset.cpp 의 Python 판 (느림, 교차검증용) 과 w=10 의 7-bag 조각 구성 전수 검사.
+# 입력: argv[1] = 폭, argv[2] = 모드. n5 = 5 종 조합 21 가지, n10 = 7 종 + 3 종 중복 35 가지.
+# 출력: 모드별로 PC 가능/불가능한 조합 목록과 개수.
 import itertools, sys
 from functools import lru_cache
 

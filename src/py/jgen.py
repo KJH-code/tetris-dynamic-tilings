@@ -1,3 +1,6 @@
+# 정리 4 의 홀수 폭 J 구성(UNIT5 + PQPQ)을 명시적으로 생성해 폭별로 재생한다.
+# 입력: 없음 (파일 안의 홀수 폭 목록). 출력: 블록·꼬리·정리 배치 설명과 "w pieces rows-cleared PC?" 표.
+# 배치 규칙이 폭에 의존하지 않는다는 것을 보이는 자리다.
 import sys
 
 # J orientations by column profile

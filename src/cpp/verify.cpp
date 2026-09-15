@@ -1,3 +1,6 @@
+// 동적 T-패리티 항등식을 퍼펙트 클리어 플레이 수열 전수로 검증한다 (dedup 없이 완전 열거).
+// 입력: argv[1]=폭 w, argv[2]=조각 수 n, argv[3]=조각 마스크 (기본 127).
+// 출력: PC 수열 개수와 네 항목(per-event / global / sum(A) odd / readable)의 실패 건수. 전부 0 이어야 정상.
 #include <bits/stdc++.h>
 using namespace std;
 typedef unsigned __int128 bb;

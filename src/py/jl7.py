@@ -1,3 +1,6 @@
+# 한 조각 종류의 열 카운트 해들을 뽑아 각각이 기하적으로 실현되는지 시험한다 (정리 4 의 하한 대조용).
+# 입력: argv[1] = 폭 (기본 7), 그 외는 파일 안의 PIECE, R, NODE_CAP, NTRY.
+# 출력: 열 해의 개수와, 앞 NTRY 개 중 실현 가능한 것의 배치 순서. 상한에 걸린 건수는 결론이 아니다.
 import itertools, sys
 
 W = int(sys.argv[1]) if len(sys.argv) > 1 else 7

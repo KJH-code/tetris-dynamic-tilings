@@ -1,3 +1,6 @@
+# 보조정리 M 의 계산 근거: J 와 L 의 열 프로파일 집합이 같다는 것을 열거로 확인한다.
+# 입력: 없음. 출력: J 와 L 의 프로파일 목록과 두 집합이 동일한지 여부 (identical: True 여야 한다).
+# 프로파일이 같으므로 열 카운팅은 J 와 L 을 구별하지 못한다 (구별 불변량이 없는 이유).
 import itertools
 
 # ---- orientations, as (dr,dc) cell lists ----

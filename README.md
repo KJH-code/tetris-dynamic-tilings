@@ -81,21 +81,41 @@ src/cpp/    search engines
   pc3.cpp     perfect-clear BFS (width / piece count / piece mask / T parity)
   verify.cpp  exhaustive check of the dynamic T-parity identity
   mset.cpp    feasibility for a given piece multiset
+  seq.cpp     fixed arrival sequence, no hold, prints the play step by step
+  seqp.cpp    same, but also prints phi and the clear correction term
   fix4/5.cpp  fixed-order 7-bag solver with hold (two memo strategies)
 src/py/     analysis
   colcount.py column-counting transfer DP, all pieces and widths
   units.py    Theorem 4 unit decomposition, both proof obligations
-  szlang.py   Theorem 5 two-column reduction, invariant checks
-scripts/    batch drivers
+  jfull.py    Theorem 4 J-only construction, replayed end to end per width
+  jgen.py     Theorem 4 odd-width construction, generated explicitly
+  jl.py       Lemma M: J and L have the same set of column profiles
+  jl7.py      column solutions of one piece type, tested for realizability
+  tsol.py     all column-count solutions for T alone, per width
+  w7why.py    w=7, R=4, T only: which column solutions are realizable
+  szlang.py   Theorem 5 two-column reduction: states and row-label words
+  szinv.py    Theorem 5 invariants I0..I3, independent implementation
+  sz2col.py   Theorem 5: can row 0 of a block ever be full? (same as I3)
+  bag.py      Python cross-check of mset.cpp, plus the w=10 multiset sweeps
+  bagmin.py   7-bag minimum piece count per width
+scripts/    batch drivers for the 7-bag sweeps
 data/       raw results of the large 7-bag sweeps
 docs/ko/    full working notes (Korean), see INDEX.md
 ```
+
+`fix2.cpp` and `fix.cpp`, named in earlier drafts of the scripts, are not in this
+repository and no copy survives. They were preliminary solvers; every conclusion
+they produced is reproduced by `fix4`, so nothing is lost. The scripts now call
+`fix4` by default.
 
 ## Reproducing
 
 ```sh
 make            # build everything into bin/
-make check      # re-verify Theorems 4 and 5 and the counting table
+make check      # column counting, Theorems 1-5, the T-parity identity on the
+                # light cases, and the minimal odd-T perfect clear at width 4
+make check-full # adds the 244010-sequence case, the four order-constrained
+                # 7-bag failures, and the 7-bag minimum table (slow)
 ```
 
 Individual runs:
@@ -128,8 +148,10 @@ a narrower model. It is included for completeness, not as a claim of novelty.
 - H. Burgiel, *How to lose at Tetris*, Math. Gazette 81 (1997) 194–200.
 - J. Brzustowski, *Can you win at Tetris?*, MSc thesis, UBC, 1992.
 - H. J. Hoogeboom, W. A. Kosters, *How to construct Tetris configurations*, Int. J. Intell. Games Simul. 3 (2004) 97–105.
+- M. Reid, *Klarner systems and tiling boxes with polyominoes*, J. Combin. Theory Ser. A 111 (2005) 89–105.
+- Torres, Vallejo, *Fragments that reduce the gap cap of the T-tetromino to six*, Science and Engineering Journal 17 (2024) 128–133. (given names not yet checked)
 - E. D. Demaine, S. Hohenberger, D. Liben-Nowell, *Tetris is hard, even to approximate*, COCOON 2003.
-- MIT Hardness Group, *Tetris is hard with just one piece type*, arXiv:2603.09958.
+- MIT Hardness Group, *Tetris is hard with just one piece type*, FUN 2026 (LIPIcs 366, art. 32), arXiv:2603.09958.
 
 ## License
 

@@ -1,3 +1,6 @@
+// seq.cpp 와 같은 고정 수열 탐색이되, 단계마다 phi 와 클리어 보정항을 함께 찍는다 (A 항등식 손검산용).
+// 입력: argv[1]=폭 w, argv[2]=조각 문자열.
+// 출력: step 별 "phi X->Y | clear-corr Z" 와 마지막에 #T 및 보정항 합.
 #include <bits/stdc++.h>
 using namespace std;
 typedef unsigned __int128 bb;

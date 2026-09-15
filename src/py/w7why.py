@@ -1,3 +1,6 @@
+# w=7, R=4, T 단독에서 열 카운트 해마다 기하 실현을 전수로 시험한다 (배치 순서 x 가로 방향 선택 전부).
+# 입력: 없음. 출력: 해별 "PC=True/False" 와 실제로 지운 줄 수.
+# 열 카운팅이 통과시킨 해 중 어느 것이 실제 PC 가 되는지 가려내는 자리다.
 import itertools
 from functools import lru_cache
 

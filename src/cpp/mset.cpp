@@ -126,6 +126,13 @@ int main(int argc, char **argv) {
     if ((4*n) % w != 0) { printf("%s : cell count not divisible by w\n", argv[2]); return 0; }
     totclear = 4*n/w;
     hcap = totclear + 4;
+    // 보드 비트폭. bitindex 최대값이 hcap*w-1 이므로 hcap*w <= 128 이어야 한다.
+    // 넘으면 상위 비트가 조용히 잘려 거짓 결과가 나온다 (2026-09-15 감사에서 추가).
+    if (hcap * w > 128) {
+        printf("w=%d counts=%s : REFUSED  hcap*w = %d > 128, board does not fit __int128\n",
+               w, argv[2], hcap * w);
+        return 2;
+    }
     buildorientations();
     bool ok = rec((bb)0, 0);
     printf("w=%d counts=%s n=%d R=%d : %s\n", w, argv[2], n, totclear, ok ? "PC POSSIBLE" : "no PC");

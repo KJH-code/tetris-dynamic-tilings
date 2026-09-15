@@ -110,6 +110,15 @@ int main(int argc, char **argv) {
     }
     totclear = 4 * target / w;
     hcap = totclear + 4;
+    // 보드 비트폭. bitindex 의 최대값은 hcap*w-1 이고, 메모 키가 보드를 8 비트 왼쪽으로
+    // 밀어 meta 를 붙이므로 hcap*w+7 <= 127 이어야 한다. 넘으면 상위 비트가 조용히 잘려
+    // 서로 다른 상태가 같은 키를 갖고, 해를 놓쳐 **거짓 "NO perfect clear"** 가 나온다.
+    // 2026-09-15 감사 전에는 이 검사가 없어서 w=18,19,20 에서 거짓 음성이 나왔다.
+    if (hcap * w > 120) {
+        printf("w=%d n=%d: REFUSED  hcap*w = %d > 120, board does not fit the 128-bit memo key\n",
+               w, target, hcap * w);
+        return 2;
+    }
     buildorientations();
 
     vector<bb> frontier;

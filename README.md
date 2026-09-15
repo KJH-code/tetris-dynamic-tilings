@@ -19,7 +19,7 @@ is a play from the empty board back to the empty board.
 |---|---|---|
 | I | 4 | every width |
 | O | ∞ | even widths only |
-| T | ≤ 6 | `n = w` pieces; widths 4–12 verified by search, general width open |
+| T | ≤ 6 | `n = w` pieces; widths 4–14 verified by search, general width open |
 | J, L | 4 | every width |
 | **S, Z** | conjectured ∞ | **never, at any width** |
 

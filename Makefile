@@ -61,6 +61,8 @@ check: all
 	@./bin/verify 8 2
 	@./bin/verify 8 4
 	@echo "   (w=6 n=6 adds 244010 sequences to reach 260423; see check-full)"
+	@echo "== A: the same identity, independent Python implementation (light cases) =="
+	@python3 src/py/averify.py 4 2 4 3 4 4
 	@echo
 	@echo "== B: the minimal odd-T perfect clear at width 4 needs 3 pieces =="
 	@./bin/pc3 4 1 127 1 | sed -n 1p
@@ -79,6 +81,9 @@ check-full: check
 	@echo
 	@echo "== A: w=6 n=6, the 244010-sequence case =="
 	@./bin/verify 6 6
+	@echo
+	@echo "== A: independent Python implementation, the remaining light cases =="
+	@python3 src/py/averify.py 5 5 6 3 8 2 8 4
 	@echo
 	@echo "== D: the four order-constrained failures at bag1 = TJLISZO =="
 	@./bin/fix4 TJLISZOOJZS 200000000

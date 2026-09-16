@@ -147,6 +147,10 @@ src/py/     analysis
               period of the reachable-state sets (lower bounds for all w)
   units.py    Theorem 4 unit decomposition, both proof obligations
   tunits.py   Theorem 3b: unit search, assembly at widths 4..80, and the lower bound
+  averify.py  the T-parity identity again, independently of verify.cpp: rows as
+              integer masks, landing row from column heights rather than by
+              collision probing, and D counted as "cells with an odd number of
+              cleared rows below" rather than summed per cleared row
   jfull.py    Theorem 4 J-only construction, replayed end to end per width
   jgen.py     Theorem 4 odd-width construction, generated explicitly
   jl.py       Lemma M: J and L have the same set of column profiles
@@ -195,6 +199,13 @@ generalizes a rule already known to the competitive Tetris community (see the Ha
 wiki on Parity, and the forum thread *"Hold that T piece! A parity experiment"*). Our
 contribution there is the arbitrary-width form, the odd-width correction term, and a
 proof; it is not a new result.
+
+It is checked exhaustively over all 260,423 perfect-clear plays at widths 4–8, by two
+independent implementations that agree on the sequence counts: `verify.cpp` and
+`src/py/averify.py`. The two also disagree on purpose about how `D` is defined — one sums
+cells above each cleared row, the other counts cells with an odd number of cleared rows
+below — and the run confirms the two definitions always agree mod 2, which is the step the
+per-event identity actually needs.
 
 The 7-bag material in [`docs/ko/seven-bag-order-ko.md`](docs/ko/seven-bag-order-ko.md)
 reproduces observations the community's own Perfect Clear Finder can already make, with

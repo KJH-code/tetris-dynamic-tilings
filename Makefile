@@ -23,6 +23,9 @@ check: all
 	@echo "== Lemma 0: column counting, minimal R per piece and width =="
 	@python3 src/py/colcount.py
 	@echo
+	@echo "== Lemma 0 at arbitrary width: period of the reachable-state sets =="
+	@python3 src/py/colproof.py
+	@echo
 	@echo "== Theorems 1, 5: no perfect clear for S alone, or for {S,Z} =="
 	@./bin/pc3 4 2 8 0 | sed -n 1p
 	@./bin/pc3 6 3 8 0 | sed -n 1p

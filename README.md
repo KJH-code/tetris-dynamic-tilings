@@ -85,6 +85,29 @@ w odd           n = 2w     R = 8
 The construction decomposes the board into column-disjoint units, each a fixed finite
 object, so the proof reduces to four `w`-independent checks. Verified for widths 4–60.
 
+The matching lower bound holds at **every** width, not just the ones checked. The
+column-counting system is swept left to right; its state is the contribution already
+committed to the columns ahead, each component in `0..R`, so the state space is finite.
+The transition on sets of states is deterministic, hence the sequence of reachable sets
+is eventually periodic, and the last few columns apply a fixed sequence of restricted
+transitions. So "does width `w` admit a column solution" is eventually periodic in `w`,
+and detecting the period settles all widths at once:
+
+```
+J, L    R = 1  no solution at any width
+        R = 2  only when 4 | w
+        R = 4  only when w is even
+        R = 8  every width
+```
+
+which gives minimum `R = 2, 4, 8` and `n = w/2, w, 2w`. The same procedure fixes every
+other piece at arbitrary width: `I` needs `R = 1` when `4 | w` and `R = 4` otherwise,
+`O`, `S` and `Z` need `R = 2` at even widths and have no column solution at odd widths,
+and `T` needs `R = 4` everywhere. See `src/py/colproof.py`.
+
+Because `S` and `Z` do pass the count at every even width, Theorem 1(b)'s geometric step
+is provably unavoidable — counting alone can never close those cases.
+
 **Theorem 5.** `{S, Z}` together admits no perfect clear at any width. Column counting
 confines every piece to a two-column block, reducing the width-`w` problem to a
 width-independent two-column system. Four invariants on the prefix-difference sequence
@@ -120,6 +143,8 @@ src/cpp/    search engines
   fix4/5.cpp  fixed-order 7-bag solver with hold (two memo strategies)
 src/py/     analysis
   colcount.py column-counting transfer DP, all pieces and widths
+  colproof.py the same system decided at ARBITRARY width, by detecting the
+              period of the reachable-state sets (lower bounds for all w)
   units.py    Theorem 4 unit decomposition, both proof obligations
   tunits.py   Theorem 3b: unit search, assembly at widths 4..80, and the lower bound
   jfull.py    Theorem 4 J-only construction, replayed end to end per width

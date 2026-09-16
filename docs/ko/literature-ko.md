@@ -128,6 +128,11 @@ MIT Hardness Group 이 2026 년에 단일 조각 복잡도를 다뤘으므로 �
 
 ## 권장 논문 구성
 
+**진입점은 T 다** (재혁 결정 2026-09-16). 정리 3(b) 의 유닛 분해에서 적층 유닛 폭이
+Walkup 때문에 4 의 배수로 강제되고, 정적 타일링이 막는 폭 5·6·7 을 마지막 유닛의
+줄 클리어가 정확히 그만큼 메운다. "정적 제약이 막는 만큼을 동적 규칙이 채운다" 를
+서론에서 이 구조로 보여준다. 상세는 `t-widths-ko.md` §Walkup 과의 관계.
+
     제목   Tetromino tilings with line clears
            또는 Walkup's theorem fails in the dynamic setting
 

@@ -36,6 +36,11 @@ check: all
 	@./bin/pc3 4 2 32 0 | sed -n 1p
 	@./bin/pc3 6 6 32 0 | sed -n 1p
 	@echo
+	@echo "== Theorem 3b: T alone, every assembled width replayed from the units =="
+	@while read -r w seq; do ./bin/tplay "$$w" "$$seq" > /dev/null || exit 1; done < data/tplay-seqs.txt
+	@echo "   every width in data/tplay-seqs.txt replays OK"
+	@echo "   (the unit search and the R >= 4 lower bound are in check-full)"
+	@echo
 	@echo "== Theorem 4: unit decomposition, widths 4..60 =="
 	@python3 src/py/units.py
 	@echo
@@ -66,6 +71,9 @@ check: all
 
 # Slow items: minutes to tens of minutes each.
 check-full: check
+	@echo "== Theorem 3b: unit search, assembly at widths 4..80, and the lower bound =="
+	@python3 src/py/tunits.py
+	@echo
 	@echo "== A: w=6 n=6, the 244010-sequence case =="
 	@./bin/verify 6 6
 	@echo

@@ -19,7 +19,7 @@ is a play from the empty board back to the empty board.
 |---|---|---|
 | I | 4 | every width |
 | O | ∞ | even widths only |
-| T | ≤ 6 | `n = w` pieces; widths 4–14 verified by search, general width open |
+| T | ≤ 6 | every width, `n = w` pieces |
 | J, L | 4 | every width |
 | **S, Z** | conjectured ∞ | **never, at any width** |
 
@@ -46,6 +46,32 @@ widths, column counting alone gives a contradiction. For even widths, counting f
 every piece to be a vertical S starting at an even column; such a piece never reaches
 relative row 0 in its even column, so cell `(0,0)` is never filled, row 0 never clears,
 and the first piece's cell in row 0 is permanent.
+
+**Theorem 3(b).** T alone admits a perfect clear at every width `w ≥ 4`, and the minimum
+number of pieces is exactly `n = w` (with `R = 4` rows cleared).
+
+The lower bound needs only the first three column equations. T has three column profiles —
+`(1,2,1)` flat, `(1,3)` and `(3,1)` upright — and writing `h_c`, `p_c`, `q_c` for the number
+of each starting at column `c`, column `j` receives
+
+```
+N_j = h_j + 2h_{j-1} + h_{j-2} + p_j + 3p_{j-1} + 3q_j + q_{j-1} = R
+```
+
+For `R = 1, 2, 3` the equations at `j = 0, 1, 2` have no solution in non-negative integers,
+so `R ≥ 4` and `n = Rw/4 ≥ w`.
+
+The upper bound is a unit decomposition, as in Theorem 4. A stacking unit of width 4 fills
+rows 0–3 by pure stacking, and a final unit of width `m ∈ {4,5,6,7}` clears the four rows;
+`w = 4a + m` covers every width, with `4a + m = w` pieces.
+
+**This is where the contrast with Walkup is sharpest.** The stacking condition *is* a T-tiling
+of a `x × 4` rectangle, so Walkup forces `4 | x` — widths 5, 6 and 7 cannot be built by
+stacking at all. The final unit's line clears cover exactly the widths static tiling forbids.
+(Walkup also says nothing about whether a `4 × 4` tiling can be reached under gravity, since
+support is not a static-tiling concern; that it can was the real obstacle here.)
+
+See [`docs/ko/t-widths-ko.md`](docs/ko/t-widths-ko.md).
 
 **Theorem 4.** J and L admit perfect clears at every width `w ≥ 4`, with the minimum
 number of pieces:
@@ -90,10 +116,12 @@ src/cpp/    search engines
   mset.cpp    feasibility for a given piece multiset
   seq.cpp     fixed arrival sequence, no hold, prints the play step by step
   seqp.cpp    same, but also prints phi and the clear correction term
+  tplay.cpp   replays a labelled placement list (independent check of Theorem 3b)
   fix4/5.cpp  fixed-order 7-bag solver with hold (two memo strategies)
 src/py/     analysis
   colcount.py column-counting transfer DP, all pieces and widths
   units.py    Theorem 4 unit decomposition, both proof obligations
+  tunits.py   Theorem 3b: unit search, assembly at widths 4..80, and the lower bound
   jfull.py    Theorem 4 J-only construction, replayed end to end per width
   jgen.py     Theorem 4 odd-width construction, generated explicitly
   jl.py       Lemma M: J and L have the same set of column profiles

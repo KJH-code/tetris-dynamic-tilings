@@ -200,7 +200,7 @@ wiki on Parity, and the forum thread *"Hold that T piece! A parity experiment"*)
 contribution there is the arbitrary-width form, the odd-width correction term, and a
 proof; it is not a new result.
 
-It is checked exhaustively over all 260,423 perfect-clear plays at widths 4–8, by two
+It is checked exhaustively over all 260,423 perfect-clear plays at widths 4-8, by two
 independent implementations that agree on the sequence counts: `verify.cpp` and
 `src/py/averify.py`. The two also disagree on purpose about how `D` is defined — one sums
 cells above each cleared row, the other counts cells with an odd number of cleared rows

@@ -115,6 +115,20 @@ width-independent two-column system. Four invariants on the prefix-difference se
 Burgiel's theorem: with only S and Z you cannot merely lose — you cannot even empty
 the board.
 
+**The 7-bag order constraint.** At width 10 with 10 pieces, ten placements consume at
+most eleven arrivals, so only the first four pieces of the second bag matter: 840
+prefixes per first bag. For 100 first bags drawn at random, all 84,000 cases are now
+decided — 83,991 possible, 9 impossible, a failure rate of `1.1e-4`. The nine sit in
+three first bags, three cases each; the other 97 first bags succeed on all 840.
+
+The way that number was nearly wrong is worth more than the number. A first pass with a
+state cap of `8e6` reported OK 83,359, undecided 641, **failures 0**. All nine failures
+were inside the undecided 641; they need between `3.8e7` and `5.2e7` states. A capped
+search is not a negative result.
+
+Perfect clears are therefore almost always available, and the openers the community
+memorizes are answers to a search-cost problem, not an existence problem.
+
 ## Model independence
 
 The proofs use only three assumptions:
@@ -163,7 +177,12 @@ src/py/     analysis
   bag.py      Python cross-check of mset.cpp, plus the w=10 multiset sweeps
   bagmin.py   7-bag minimum piece count per width
 scripts/    batch drivers for the 7-bag sweeps
+  bag1sweep.sh  stage one: every first bag in a list against all 840 second-bag
+                prefixes, resumable
+  capresolve.sh stage two: re-run whatever stage one left undecided, at a cap
+                large enough to settle it
 data/       raw results of the large 7-bag sweeps
+paper/      the draft (tetromino-tilings.tex, refs.bib)
 docs/ko/    full working notes (Korean), see INDEX.md
 ```
 
@@ -200,7 +219,8 @@ wiki on Parity, and the forum thread *"Hold that T piece! A parity experiment"*)
 contribution there is the arbitrary-width form, the odd-width correction term, and a
 proof; it is not a new result.
 
-It is checked exhaustively over all 260,423 perfect-clear plays at widths 4-8, by two
+It is checked exhaustively over all 260,423 perfect-clear plays at widths 4, 5, 6 and 8
+(width 7 is not in that set: `verify 7 7` has not been run), by two
 independent implementations that agree on the sequence counts: `verify.cpp` and
 `src/py/averify.py`. The two also disagree on purpose about how `D` is defined — one sums
 cells above each cleared row, the other counts cells with an odd number of cleared rows

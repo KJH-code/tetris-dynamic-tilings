@@ -583,25 +583,50 @@ placements consume at most eleven arrivals, so only the first four pieces of the
 second bag matter, giving $P(7,4) = 840$ prefixes to consider for each of the
 $7! = 5040$ orders of the first bag.
 
-% TODO: fill in the sampled failure rate once the bag1 sweep completes.
-% Confirmed so far: two exhaustive first bags (IOTSZJL: 0 failures out of 840;
-% TJLISZO: 4 failures out of 840, namely OJZS, OLZS, LOZS, JOZS).
+We sampled $100$ first bags uniformly from the $5040$ with a fixed seed and settled
+all $840$ prefixes for each: $84{,}000$ cases. Nine fail. They fall in three first
+bags, three apiece:
+\[
+\begin{array}{ll}
+\mathrm{LJTIOZS}: & \mathrm{OLSZ},\ \mathrm{LOSZ},\ \mathrm{LSOZ} \\
+\mathrm{LOTJISZ}: & \mathrm{OJZS},\ \mathrm{JOZS},\ \mathrm{JZOS} \\
+\mathrm{TLJOISZ}: & \mathrm{OJZS},\ \mathrm{JOZS},\ \mathrm{JZOS}
+\end{array}
+\]
+The other $97$ first bags admit a perfect clear for every prefix, so the failure rate
+over the sample is $9/84{,}000 \approx 1.1 \times 10^{-4}$. An earlier first bag,
+$\mathrm{TJLISZO}$, was settled separately and fails on four prefixes
+($\mathrm{OJZS}$, $\mathrm{OLZS}$, $\mathrm{LOZS}$, $\mathrm{JOZS}$).
 
-Two first bags have been settled exhaustively. For $\mathrm{IOTSZJL}$ all $840$
-prefixes admit a perfect clear. For $\mathrm{TJLISZO}$ exactly four do not:
-$\mathrm{OJZS}$, $\mathrm{OLZS}$, $\mathrm{LOZS}$ and $\mathrm{JOZS}$. All four end
-in $\mathrm{ZS}$, and the two near misses that do succeed end in $\mathrm{OZ}$; the
-first bag itself ends in $\mathrm{S},\mathrm{Z},\mathrm{O}$. The mechanism appears to
-be that vertical I is the main way to resolve an S/Z staircase within four rows, and
-that a late I cannot repair what the earlier pieces have built --- the direction
-Burgiel's theorem~\cite{burgiel1997} points in.
+A caution about the computation is worth recording, because it changed the answer.
+Our first pass used a state cap of $8 \times 10^6$ and reported \emph{no} failures at
+all: every one of the nine was sitting in a case that hit the cap, undecided. They
+need between $3.8 \times 10^7$ and $5.2 \times 10^7$ states to settle. A capped
+search is not a negative result.
 
-We stress the limits of this. Two first bags out of $5040$ is not a basis for a
-failure rate, and our search is hard-drop only, so a reported impossibility is an
-impossibility \emph{in our model}: spins and tucks might rescue some of these cases.
-The community's own perfect-clear solvers handle a more general model and can make
-the same observations, so we claim no novelty here; the point is only that perfect
-clears are almost always available, and that the well-known openers exist to save
+Across all thirteen known failures the second-bag prefix is a permutation of
+$\{O,S,Z\}$ together with one of $J$ or $L$ --- no exception so far. A tempting
+sharper rule, that the failing prefixes end in $\mathrm{ZS}$, is false: the endings
+observed are $\mathrm{ZS}$ eight times, $\mathrm{SZ}$ twice, $\mathrm{OS}$ twice and
+$\mathrm{OZ}$ once, and the prefix $\mathrm{LSOZ}$ fails after $\mathrm{LJTIOZS}$ but
+succeeds after $\mathrm{TJLISZO}$. Failure is a joint property of the two bags, not
+of the second one alone.
+
+What the four failing first bags do share is that $S$ and $Z$ both arrive late ---
+in position five or later. Fifteen of our hundred samples have that property and
+three of them fail; the other eighty-five do not fail at all. The condition also
+survived a test made before the computation finished: the last four undecided cases
+all lay in first bags where $S$ or $Z$ arrives early, so the condition predicted they
+would succeed, and all four did. This is consistent with the mechanism one would
+guess --- a vertical I is the main way to resolve an S/Z staircase inside four rows,
+and an I arriving after the staircase has been built cannot undo it, which is the
+direction Burgiel's theorem~\cite{burgiel1997} points in.
+
+We claim no novelty for this section. The community's own perfect-clear solvers work
+in a more general model --- ours is hard-drop only, so an impossibility here is an
+impossibility \emph{in our model}, and spins or tucks might rescue some of these
+cases. The point is the shape of the answer: perfect clears are almost always
+available, failures are rare and structured, and the well-known openers exist to save
 search and memorisation rather than to reach positions that are otherwise
 unreachable.
 

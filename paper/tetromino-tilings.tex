@@ -603,13 +603,63 @@ over the sample is $9/84{,}000 \approx 1.1 \times 10^{-4}$. An earlier first bag
 $\mathrm{TJLISZO}$, was settled separately and fails on four prefixes
 ($\mathrm{OJZS}$, $\mathrm{OLZS}$, $\mathrm{LOZS}$, $\mathrm{JOZS}$).
 
-One structural observation cuts the work in half for anyone repeating this. The hold
-slot starts empty, so the first two arrivals can be played in either order, and swapping
-them appears to leave the problem unchanged: in every instance we have compared --- two
-pairs of first bags over all $840$ prefixes each, and a third pair over four prefixes,
-$1{,}684$ cases in all --- the two orders agree not only on the verdict but on the exact
-number of states the search visits. The $5040$ first bags would then fall into $2520$
-classes of two, halving the cost of the exhaustive computation. We have not proved this.
+One structural fact halves the work for anyone repeating this.
+
+\begin{lemma}
+\label{lem:hold}
+The hold slot is empty on an initial segment of the play and never afterwards, so a
+play stashes at most once.
+\end{lemma}
+
+\begin{proof}
+A move either places the arriving piece and leaves the hold unchanged, or places the
+held piece and puts the arriving one in its place, or --- only from an empty hold ---
+stashes the arriving piece without placing anything. The last two leave the hold
+occupied, and a stash requires it empty.
+\end{proof}
+
+Write $\mathrm{HG}_m(h; s_1 s_2 \ldots)$ for the set of length-$m$ sequences the player
+can place starting from hold $h$ with $s_1, s_2, \ldots$ arriving, each step placing
+either the held piece (the arrival replacing it) or the arrival (the hold unchanged).
+
+\begin{theorem}
+\label{thm:swap}
+If the arrival sequence $q_0 q_1 \ldots q_{L-1}$ has $L \geq n+1$, then the set of
+placement sequences of length $n$ the player can achieve is
+\[
+q_1 \cdot \mathrm{HG}_{n-1}(q_0; q_2 q_3 \ldots) \;\cup\; q_0 \cdot \mathrm{HG}_{n-1}(q_1; q_2 q_3 \ldots),
+\]
+which is symmetric in $q_0$ and $q_1$. Exchanging the first two arrivals therefore
+changes neither the achievable placement sequences nor whether a perfect clear exists.
+\end{theorem}
+
+\begin{proof}
+The two terms are the two continuations after stashing $q_0$ immediately, so they are
+achievable. For the converse, note that inside $\mathrm{HG}$ the move ``place the held
+piece, keep the arrival'' repeated from hold $q_1$ emits $q_1, q_2, q_3, \ldots$ in
+order. By Lemma~\ref{lem:hold} a play either never stashes, giving
+$q_0 q_1 \ldots q_{n-1}$, which is $q_0$ followed by $n-1$ such repetitions and needs
+the arrival $q_n$ --- the one place where $L \geq n+1$ is used --- or stashes once, at
+$q_k$ say, giving $q_0 \ldots q_{k-1}$ followed by $\mathrm{HG}_{n-k}(q_k; q_{k+1}
+\ldots)$; for $k = 0$ this is the displayed union, for $k = 1$ its second term, and for
+$k \geq 2$ it is reached inside that second term by $k-1$ repetitions before branching
+freely.
+\end{proof}
+
+So the $5040$ first bags fall into $2520$ classes of two, and a bad first bag always has
+a bad partner. The hypothesis is not decorative: with $L = n$ no stash is possible and
+the play is forced, and among sequences of four pieces at width $4$ there are $66$ pairs
+differing only in their first two entries where one clears and the other does not.
+
+Theorem~\ref{thm:swap} also explains a stronger effect we first met as a coincidence.
+Exchanging $q_0$ and $q_1$ leaves the stash-immediately subtree identical state by
+state, so a search that stashes first and succeeds inside that subtree visits exactly
+the same states for both orders; across $1{,}684$ solvable cases the two orders agreed
+on the state count to the digit. The no-stash branch is \emph{not} identical --- an
+I placed before an O reaches boards an O placed before an I cannot --- and it is
+explored only when the search fails. On the first failing pair we tested, the two orders
+agreed on the verdict, as the theorem requires, and differed in state count,
+$38{,}542{,}538$ against $38{,}537{,}388$.
 
 A caution about the computation is worth recording, because it changed the answer.
 Our first pass used a state cap of $8 \times 10^6$ and reported \emph{no} failures at

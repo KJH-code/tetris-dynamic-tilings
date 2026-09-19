@@ -224,9 +224,15 @@ and 8, with all four checks reporting zero failures. Width 7 contributes 4,498,3
 those on its own: `4n = Rw` forces `n` to be a multiple of 7 there, so the smallest case
 is already `(7,7)`.
 
-Of that total, the 260,423 plays at widths 4, 5, 6 and 8 are checked by two
-independent implementations that agree on the sequence counts: `verify.cpp` and
-`src/py/averify.py`. The two also disagree on purpose about how `D` is defined — one sums
+All of it is checked by two independent implementations that agree on the sequence
+counts: `verify.cpp` and `src/py/averify.py`. The Python one cannot reach width 7 in a
+single process — the cost per play grows about 2.1x per width, putting it somewhere
+between 9 and 19 hours — so it splits the root placements sixteen ways and runs the
+shards in parallel. That the sixteen counts sum to exactly 4,498,382 establishes both
+that the split lost and double-counted nothing and that the two implementations agree
+there too.
+
+The two also disagree on purpose about how `D` is defined — one sums
 cells above each cleared row, the other counts cells with an odd number of cleared rows
 below — and the run confirms the two definitions always agree mod 2, which is the step the
 per-event identity actually needs.

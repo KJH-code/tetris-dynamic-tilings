@@ -1,0 +1,12 @@
+# 7-bag 최소 조각 수, w=16 (2026-09-19)
+# 생성: python3 src/py/bagmin.py 16    (약 3 시간)
+# 4n = 16R 이므로 n in {4, 8, 12, ...}.
+# n=4, n=8 은 미결 0 으로 전부 배제. n=12 에서 21 개 중 5 개 가능 -> 최소 = 12.
+# n=12 의 미결 16 건은 최소값 주장에 영향이 없다 (가능 증인이 다섯이므로).
+# 증인 검산: ./bin/mset 16 1222221  ->  PC POSSIBLE (9.5 초)
+#
+w=16  unconstrained=4
+    n=4     0/35  multisets possible, 0 undecided
+    n=8     0/7   multisets possible, 0 undecided
+    n=12    5/21  multisets possible, 16 undecided
+w=16  unconstrained=4   sevenbag=12  witness counts=1222221

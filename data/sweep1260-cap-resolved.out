@@ -76,3 +76,23 @@ IOJTLSZ JZSO OK 10449344
 IOJTLZS ISZO OK 14330816
 IOJTLZS IZSO OK 8945910
 IOJTLZS LSZO OK 9093844
+#
+# 2 차분 — 대조군 JOTLIZS (2026-09-19). 목록 30 번, LOTJISZ 의 거울상이다.
+#   파이프라인이 알려진 답을 재현하는지 보려고 재정렬 때 앞으로 올린 류다.
+#   원본 LOTJISZ 의 실패 셋 OJZS/JOZS/JZOS 는 거울로 OLSZ/LOSZ/LSOZ 가 된다.
+#
+#   JOTLIZS OLSZ FAIL 37968211   <->   LOTJISZ OJZS FAIL 37968211
+#   JOTLIZS LOSZ FAIL 47010215   <->   LOTJISZ JOZS FAIL 47010215
+#   JOTLIZS LSOZ FAIL 45182666   <->   LOTJISZ JZOS FAIL 45182666
+#
+#   셋 다 상태 수가 자리까지 일치한다. 거울이 탐색 공간 전체의 동형사상이므로
+#   전부 훑는 실패 케이스에서는 방문 상태 수까지 같아야 한다 — 그대로 나왔다.
+#
+#   JOZS(8,486,848)와 JZOS(8,120,573)는 1 단계 상한 8M 을 조금 넘겨 CAP 이 됐을 뿐
+#   실패가 아니다. 상한 바로 위의 경계 케이스이고 2 단계에서 즉시 풀린다.
+#
+JOTLIZS OLSZ FAIL 37968211
+JOTLIZS JOZS OK 8486848
+JOTLIZS JZOS OK 8120573
+JOTLIZS LOSZ FAIL 47010215
+JOTLIZS LSOZ FAIL 45182666

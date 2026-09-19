@@ -1,5 +1,5 @@
 # 동적 T-패리티 항등식(A)을 퍼펙트 클리어 수열 전수로 검증한다. verify.cpp 의 독립 구현.
-# 입력: 인자로 "w n" 쌍들 (없으면 가벼운 7 케이스). 환경변수 MAXN 으로 케이스별 상한 없음.
+# 입력: 인자로 "w n" 쌍들 (없으면 가벼운 7 케이스). `--shard=s/m` 을 주면 루트 분할 실행.
 # 출력: 케이스별 PC 수열 개수와 네 항목의 실패 건수. verify.cpp 와 개수까지 일치해야 한다.
 #
 # 독립성을 위해 verify.cpp 와 다르게 구현한 지점:
@@ -167,7 +167,10 @@ def height_of(board, w, hcap):
     return 0
 
 
-def run_case(w, n):
+def run_case(w, n, shard=None):
+    # shard = (s, m): 루트(첫 조각)의 배치 선택지를 m 등분해 s 번째만 내려간다.
+    # 선택지 번호는 배치 가능 여부와 무관하게 매기므로 분할이 결정적이고 서로 겹치지 않는다.
+    # 탐색 로직은 건드리지 않는다 — m 개 샤드의 개수를 더하면 통짜 실행과 같아야 한다.
     if (4 * n) % w != 0:
         return None
     totclear = 4 * n // w
@@ -190,8 +193,13 @@ def run_case(w, n):
                 if (tcount - dsum - asum // 2) % 2 != 0:
                     stats["read"] = stats["read"] + 1
             return
+        rootidx = -1
         for nm, cells, width, bottom in pieces:
             for col in range(w - width + 1):
+                if k == 0 and shard is not None:
+                    rootidx = rootidx + 1
+                    if rootidx % shard[1] != shard[0]:
+                        continue
                 pre = place(board, w, hcap, cells, width, bottom, col)
                 if pre is None:
                     continue
@@ -226,6 +234,18 @@ def run_case(w, n):
 
 def main():
     args = sys.argv[1:]
+    shard = None
+    rest = []
+    for a in args:
+        if a.startswith("--shard="):
+            s, m = a.split("=", 1)[1].split("/")
+            shard = (int(s), int(m))
+            if not (0 <= shard[0] < shard[1]):
+                print("--shard=s/m 은 0 <= s < m 이어야 한다")
+                sys.exit(2)
+        else:
+            rest.append(a)
+    args = rest
     cases = []
     if len(args) >= 2:
         for i in range(0, len(args) - 1, 2):
@@ -234,19 +254,20 @@ def main():
         cases = [(4, 2), (4, 3), (4, 4), (5, 5), (6, 3), (8, 2), (8, 4)]
     total = 0
     bad = 0
+    tag = "" if shard is None else " [shard %d/%d]" % (shard[0], shard[1])
     for w, n in cases:
-        st = run_case(w, n)
+        st = run_case(w, n, shard)
         if st is None:
             print("w=%2d n=%2d | skip (4n 이 w 로 나눠지지 않음)" % (w, n))
             continue
         total = total + st["pc"]
         bad = bad + st["event"] + st["glob"] + st["aodd"] + st["read"] + st["ddef"]
-        print("w=%2d n=%2d | PC: %6d | per-event fail: %d | global fail: %d | "
+        print("w=%2d n=%2d%s | PC: %6d | per-event fail: %d | global fail: %d | "
               "sum(A) odd: %d | readable fail: %d | D 두 정의 mod2 불일치: %d"
-              % (w, n, st["pc"], st["event"], st["glob"], st["aodd"],
+              % (w, n, tag, st["pc"], st["event"], st["glob"], st["aodd"],
                  st["read"], st["ddef"]))
         sys.stdout.flush()
-    print("합계 PC 수열 %d 개, 실패 총 %d 건" % (total, bad))
+    print("합계 PC 수열 %d 개, 실패 총 %d 건%s" % (total, bad, tag))
 
 
 main()

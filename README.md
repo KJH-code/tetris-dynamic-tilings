@@ -219,8 +219,12 @@ wiki on Parity, and the forum thread *"Hold that T piece! A parity experiment"*)
 contribution there is the arbitrary-width form, the odd-width correction term, and a
 proof; it is not a new result.
 
-It is checked exhaustively over all 260,423 perfect-clear plays at widths 4, 5, 6 and 8
-(width 7 is not in that set: `verify 7 7` has not been run), by two
+It is checked exhaustively over all 4,758,805 perfect-clear plays at widths 4, 5, 6, 7
+and 8, with all four checks reporting zero failures. Width 7 contributes 4,498,382 of
+those on its own: `4n = Rw` forces `n` to be a multiple of 7 there, so the smallest case
+is already `(7,7)`.
+
+Of that total, the 260,423 plays at widths 4, 5, 6 and 8 are checked by two
 independent implementations that agree on the sequence counts: `verify.cpp` and
 `src/py/averify.py`. The two also disagree on purpose about how `D` is defined — one sums
 cells above each cleared row, the other counts cells with an odd number of cleared rows

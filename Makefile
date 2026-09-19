@@ -47,6 +47,10 @@ check: all
 	@echo "== Theorem 4: unit decomposition, widths 4..60 =="
 	@python3 src/py/units.py
 	@echo
+	@echo "== Lemma M: J and L have the same set of column profiles =="
+	@python3 src/py/jl.py --fast | sed -n '1,3p'
+	@echo "   (the realizability sweep at widths 4..6 is in check-full)"
+	@echo
 	@echo "== Theorem 5: two-column reduction, reachable states and words =="
 	@python3 src/py/szlang.py | sed -n '1,3p'
 	@echo "== Theorem 5: invariants I0..I3, independent implementation =="
@@ -96,6 +100,10 @@ check-full: check
 	@echo
 	@echo "== D: 7-bag minimum piece count, widths 4..10 =="
 	@python3 src/py/bagmin.py 4 5 6 7 8 9 10
+	@echo
+	@echo "== Lemma M: J and L realize the same column solutions, widths 4..6 =="
+	@echo "   (about 30 minutes; w=6 R=8 alone has 490 solutions and 12 pieces)"
+	@python3 src/py/jl.py
 
 clean:
 	rm -rf $(BIN)

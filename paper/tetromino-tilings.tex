@@ -598,6 +598,14 @@ over the sample is $9/84{,}000 \approx 1.1 \times 10^{-4}$. An earlier first bag
 $\mathrm{TJLISZO}$, was settled separately and fails on four prefixes
 ($\mathrm{OJZS}$, $\mathrm{OLZS}$, $\mathrm{LOZS}$, $\mathrm{JOZS}$).
 
+One structural observation cuts the work in half for anyone repeating this. The hold
+slot starts empty, so the first two arrivals can be played in either order, and swapping
+them appears to leave the problem unchanged: in every instance we have compared --- two
+pairs of first bags over all $840$ prefixes each, and a third pair over four prefixes,
+$1{,}684$ cases in all --- the two orders agree not only on the verdict but on the exact
+number of states the search visits. The $5040$ first bags would then fall into $2520$
+classes of two, halving the cost of the exhaustive computation. We have not proved this.
+
 A caution about the computation is worth recording, because it changed the answer.
 Our first pass used a state cap of $8 \times 10^6$ and reported \emph{no} failures at
 all: every one of the nine was sitting in a case that hit the cap, undecided. They

@@ -96,3 +96,37 @@ JOTLIZS JOZS OK 8486848
 JOTLIZS JZOS OK 8120573
 JOTLIZS LOSZ FAIL 47010215
 JOTLIZS LSOZ FAIL 45182666
+#
+# 3 차분 — 대조군 JTLOIZS (2026-09-19). 목록 32 번.
+#   대조군 1 과 결정적으로 다르다. JOTLIZS 는 LOTJISZ 의 **순수 거울상**이지만
+#   JTLOIZS 는 TLJOISZ 의 **거울 다음 교환**이다 (rep = swap(mirror(TLJOISZ))).
+#   두 대칭의 성격이 다르므로 결과도 다르게 나와야 한다:
+#     거울  — 탐색 공간 전체의 동형사상  -> 실패 케이스의 상태 수까지 보존
+#     교환  — 스태시 부분트리만 동형     -> 실패 케이스의 상태 수는 보존 안 함
+#   그래서 "판정은 같되 상태 수는 달라야 한다" 고 미리 적고 돌렸다.
+#
+#   JTLOIZS OLSZ FAIL 39173291   <->   TLJOISZ OJZS FAIL 39099972    차이 73,319
+#   JTLOIZS LOSZ FAIL 50464994   <->   TLJOISZ JOZS FAIL 50376425    차이 88,569
+#   JTLOIZS LSOZ FAIL 48733122   <->   TLJOISZ JZOS FAIL 48644898    차이 88,224
+#
+#   셋 다 판정 일치, 셋 다 상태 수 불일치. **예측 통과.**
+#   대조군 1 은 셋 다 자리까지 일치했다. 두 대조군이 정확히 반대로 갈렸다.
+#
+#   나머지 12 건은 전부 OK (15.8M ~ 35.2M). 이 류의 CAP 이 15 건으로 많았던 것은
+#   실패가 많아서가 아니라 류 전체가 어려워 1 단계 상한 8M 을 넘는 케이스가 많아서다.
+#
+JTLOIZS IJSZ OK 17978564
+JTLOIZS OSZL OK 22764570
+JTLOIZS OSLZ OK 22803873
+JTLOIZS OJSZ OK 15811224
+JTLOIZS OJZS OK 25971844
+JTLOIZS OLSZ FAIL 39173291
+JTLOIZS SOZL OK 20182763
+JTLOIZS SOLZ OK 20220547
+JTLOIZS SLOZ OK 21767113
+JTLOIZS JISZ OK 22484972
+JTLOIZS JOSZ OK 21323169
+JTLOIZS JOZS OK 35162318
+JTLOIZS JZOS OK 34776026
+JTLOIZS LOSZ FAIL 50464994
+JTLOIZS LSOZ FAIL 48733122

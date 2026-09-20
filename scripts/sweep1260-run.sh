@@ -21,6 +21,36 @@ PAR1=${PAR1:-3}   # 1 단계
 PAR2=${PAR2:-1}   # 2 단계
 mkdir -p "$WORK/sweep1260" "$REPO/data/sweep1260"
 
+# --- 중복 실행 방지 ---
+# 두 번 부르면 두 벌이 돌고, 코어를 나눠 쓰느라 전부 느려진다. 같은 bag1 을 두 프로세스가
+# 동시에 처리하면 같은 .partial 에 쓰기까지 한다 (줄 수 가드가 막아주지만 시간은 버린다).
+# 2026-09-20 에 실제로 8 프로세스가 4 코어에서 절반 속도로 돈 적이 있다.
+# 돌고 있는 것을 멈추려면: ./scripts/sweep1260-run.sh --stop
+if [ "${1:-}" = "--stop" ] || [ "${2:-}" = "--stop" ]; then
+  if [ -f "$WORK/run.pids" ]; then
+    while read -r p; do kill "$p" 2>/dev/null; done < "$WORK/run.pids"
+    sleep 2
+    ps -C xargs -o pid= > "$WORK/.k"; while read -r p; do kill "$p" 2>/dev/null; done < "$WORK/.k"
+    sleep 1
+    ps -C fix4 -o pid= > "$WORK/.k"; while read -r p; do kill "$p" 2>/dev/null; done < "$WORK/.k"
+    rm -f "$WORK/run.pids" "$WORK/.k"
+    echo "정지했다."
+  else
+    echo "$WORK/run.pids 가 없다. 돌고 있는 것이 없거나 다른 작업디렉터리다."
+  fi
+  exit 0
+fi
+if [ -f "$WORK/run.pids" ]; then
+  alive=0
+  while read -r p; do kill -0 "$p" 2>/dev/null && alive=$((alive+1)); done < "$WORK/run.pids"
+  if [ "$alive" -gt 0 ]; then
+    echo "이미 $alive 개가 돌고 있다 ($WORK/run.pids). 먼저 멈춰라:"
+    echo "    $0 $WORK --stop"
+    exit 1
+  fi
+  rm -f "$WORK/run.pids"
+fi
+
 # --- 복구: 레포에 커밋된 완료분을 작업디렉터리로 되돌린다 ---
 cp -n "$REPO/data/sweep1260"/*.out "$WORK/sweep1260/" 2>/dev/null
 rm -f "$WORK/sweep1260"/*.partial
@@ -31,6 +61,7 @@ cd "$REPO"
 # --- 1 단계 ---
 nohup env PAR=$PAR1 ./scripts/bag1sweep.sh data/bag1-classes-1260.txt \
       data/bag2-prefixes.txt "$WORK/sweep1260" >> "$WORK/sweep1260.log" 2>&1 &
+echo $! >> "$WORK/run.pids"
 echo "1 단계 시작 (PAR=$PAR1)"
 
 # --- 2 단계: 30 분마다 아직 확정 안 된 미결을 모아 돌린다 ---
@@ -50,6 +81,7 @@ while true; do
   echo "$(date +%H:%M) 2 단계: 미결 $n 건"
   cd "$REPO" && PAR=$PAR2 TMO=3600 ./scripts/capresolve.sh "$WORK/cap-todo.txt" "$WORK/cap-resolved.out" >/dev/null 2>&1
 done' >> "$WORK/stage2.log" 2>&1 &
+echo $! >> "$WORK/run.pids"
 echo "2 단계 루프 시작 (PAR=$PAR2, 30 분 주기)"
 
 # --- 커밋: 20 분마다 ---
@@ -101,6 +133,7 @@ Claude-Session: https://claude.ai/code/session_0118FaHdVwXoMn8JUHikzaeY"
   fi
   sleep 1200
 done' >> "$WORK/autocommit.log" 2>&1 &
+echo $! >> "$WORK/run.pids"
 echo "커밋 루프 시작 (20 분 주기)"
 echo
 echo "로그: $WORK/sweep1260.log  $WORK/stage2.log  $WORK/autocommit.log"

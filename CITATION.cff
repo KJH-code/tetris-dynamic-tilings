@@ -5,6 +5,7 @@ type: software
 authors:
   - given-names: Jaehyeok
     family-names: Kim
+    affiliation: Seoul Science High School
 repository-code: https://github.com/KJH-code/tetris-dynamic-tilings
 license: MIT
 date-released: 2026-09-15

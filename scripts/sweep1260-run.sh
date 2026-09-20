@@ -30,6 +30,11 @@ if [ "${1:-}" = "--stop" ] || [ "${2:-}" = "--stop" ]; then
   if [ -f "$WORK/run.pids" ]; then
     while read -r p; do kill "$p" 2>/dev/null; done < "$WORK/run.pids"
     sleep 2
+    # 보강: bash 가 스크립트를 돌리면 자기 이름을 스크립트 이름으로 바꾼다.
+    # 그래서 `ps -C bash` 로는 1 단계가 안 잡힌다 — 스크립트 이름으로 한 번 더 훑는다.
+    ps -C bag1sweep.sh -o pid= > "$WORK/.k"; while read -r p; do kill "$p" 2>/dev/null; done < "$WORK/.k"
+    ps -C capresolve.sh -o pid= > "$WORK/.k"; while read -r p; do kill "$p" 2>/dev/null; done < "$WORK/.k"
+    sleep 1
     ps -C xargs -o pid= > "$WORK/.k"; while read -r p; do kill "$p" 2>/dev/null; done < "$WORK/.k"
     sleep 1
     ps -C fix4 -o pid= > "$WORK/.k"; while read -r p; do kill "$p" 2>/dev/null; done < "$WORK/.k"

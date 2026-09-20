@@ -37,11 +37,11 @@ fall one at a time under gravity, and any row that becomes full is deleted. A
 \emph{perfect clear} is a play that starts from the empty board and returns to it.
 
 Line clears collapse the static obstruction almost completely. Four of the seven
-tetromino types --- I, T, J and L --- admit a perfect clear at every width, and O
-admits one at every even width; we determine the minimum number of pieces in each
-case, for all widths. The two exceptions are S and Z, which admit no perfect clear at
-any width, alone or together. The classification extends to every subset of the seven
-types.
+tetromino types --- I, T, J and L --- admit a perfect clear at every width $w \geq 4$,
+and O admits one at every even width; we determine the minimum number of pieces in
+each case, for all widths. The two exceptions are S and Z, which admit no perfect
+clear at any width, alone or together. The classification extends to every subset of
+the seven types.
 
 The contrast with the static theory is sharpest for T, where Walkup's condition
 reappears \emph{inside} the dynamic construction: the part of the construction that
@@ -58,7 +58,9 @@ tiled by copies of a single one?
 For the T-tetromino the answer is a classical theorem of
 Walkup~\cite{walkup1965}: a $w \times n$ rectangle admits a tiling by
 T-tetrominoes if and only if $4 \mid w$ and $4 \mid n$. Korn and
-Pak~\cite{kornpak2004} later analysed the structure of those tilings.
+Pak~\cite{kornpak2004} later analysed the structure of those tilings, and
+Reid~\cite{reid2005} placed questions of this kind in the general setting of
+Klarner systems.
 Rectangles that fail Walkup's condition cannot be tiled at all, so
 Hochberg~\cite{hochberg2015} asked how close one can get: the \emph{gap number} is
 the least number of monominoes that must be left uncovered. He proved lower bounds
@@ -88,9 +90,9 @@ piece & static & dynamic (this paper) \\
 \midrule
 I & $4 \mid w$, $4 \mid n$ needed for a full tiling & every width, $n = w/4$ or $w$ \\
 O & only even widths & every even width, $n = w/2$ \\
-T & Walkup: $4 \mid w$ and $4 \mid n$ & every width, $n = w$ \\
-J, L & & every width, $n = w/2$, $w$ or $2w$ \\
-S, Z & conjectured unbounded gap number & \textbf{never, at any width} \\
+T & Walkup: $4 \mid w$ and $4 \mid n$ & every width $w \geq 4$, $n = w$ \\
+J, L & & every width $w \geq 4$, $n = w/2$, $w$ or $2w$ \\
+S, Z & gap number conjectured unbounded~\cite{hochberg2015} & \textbf{never, at any width} \\
 \bottomrule
 \end{tabular}
 \end{center}
@@ -111,7 +113,8 @@ divisibility condition on the number of cells, so the question is interesting on
 when the supply of pieces is restricted. That is the case we treat. Separately,
 Tetris is hard: deciding how much of a given board can be cleared is
 NP-complete~\cite{demaine2003}, and this remains true for a single piece
-type~\cite{mithardness2026}. Our question is different in kind --- not the complexity
+type~\cite{mithardness2026}; Baccherini and Merlini~\cite{baccherini2008} study the
+combinatorics of related games. Our question is different in kind --- not the complexity
 of clearing a given board, but which piece sets can empty an \emph{empty} board at
 all --- and it turns out to have a clean answer.
 
@@ -323,7 +326,7 @@ If $R = 2$, then $3q_0 \leq 2$ forces $q_0 = 0$ and $(h_0,p_0) \in
 exceeding $2$.
 
 If $R = 3$, the solutions of $N_0 = 3$ are $(3,0,0)$, $(2,1,0)$, $(1,2,0)$,
-$(0,3,0)$ and $(0,0,1)$. For the first four, $N_1 \geq 2h_0 + 3q_0 \geq 6$. The
+$(0,3,0)$ and $(0,0,1)$. For the first four, $N_1 \geq 2h_0 + 3p_0 \geq 6$. The
 remaining case has $q_0 = 1$ and $h_0 = p_0 = 0$, whence $N_1 = h_1 + p_1 + 3q_1 + 1
 = 3$, so $q_1 = 0$ and $(h_1,p_1) \in \{(2,0),(1,1),(0,2)\}$; but then $N_2 \geq
 2h_1 + 3p_1 \geq 4 > 3$.
@@ -522,20 +525,30 @@ deleted, and the cell the first piece leaves in row $0$ is permanent.
 
 \begin{theorem}
 \label{thm:sets}
-A set $P$ of tetromino types admits a perfect clear at width $w$ if and only if
-$P$ meets $\{I, T, J, L\}$, or $w$ is even and $O \in P$.
+Let $w \geq 4$. A set $P$ of tetromino types admits a perfect clear at width $w$ if
+and only if $P$ meets $\{I, T, J, L\}$, or $w$ is even and $O \in P$.
 \end{theorem}
 
 \begin{proof}
 If $P$ contains one of I, T, J, L, use that type alone
-(Theorems~\ref{thm:I},~\ref{thm:T},~\ref{thm:JL}). Otherwise $P \subseteq
-\{O,S,Z\}$. All three of these have profile set $\{(1,2,1),(2,2)\}$, so the counting
-derivation in the proof of Theorem~\ref{thm:S} applies to their total counts without
-change: horizontal pieces are unused, every piece starts at an even column, and at
-odd widths $R = 0$. At even widths, if $O \in P$ then $w/2$ copies of O clear two
-rows; if not, then $P \subseteq \{S,Z\}$ and Theorems~\ref{thm:S}
-and~\ref{thm:SZ} apply.
+(Theorems~\ref{thm:I},~\ref{thm:T},~\ref{thm:JL}); each of those constructions is
+available at every $w \geq 4$. Otherwise $P \subseteq \{O,S,Z\}$, and the profiles of
+all three lie in $\{(1,2,1),(2,2)\}$, so the counting derivation in the proof of
+Theorem~\ref{thm:S} applies to their total counts without change: horizontal pieces
+are unused, every piece starts at an even column, and at odd widths $R = 0$. At even
+widths, if $O \in P$ then $w/2$ copies of O clear two rows; if not, then $P \subseteq
+\{S,Z\}$ and Theorems~\ref{thm:S} and~\ref{thm:SZ} apply.
 \end{proof}
+
+\begin{remark}[Widths below four]
+The hypothesis $w \geq 4$ is needed, and T is the reason. I clears every width from
+$1$ upwards and J and L clear widths $2$ and $3$, so those constructions lose nothing;
+but T alone clears neither width $2$ nor width $3$, although the counting system
+permits $R = 4$ at both. (Width $1$ admits no T placement at all, since every rotation
+of T spans at least two columns.) The classification at $w \leq 3$ would therefore
+need $T$ removed from the list, and we have not determined which mixed sets containing
+T succeed there.
+\end{remark}
 
 \begin{remark}
 It is tempting to argue that since $\{S,Z\}$ is the only unusable pair, every set of
@@ -651,6 +664,15 @@ a bad partner. The hypothesis is not decorative: with $L = n$ no stash is possib
 the play is forced, and among sequences of four pieces at width $4$ there are $66$ pairs
 differing only in their first two entries where one clears and the other does not.
 
+The mirror of Lemma~\ref{lem:mirror} acts here too. Reflecting a play reflects both
+bags at once, and since we run every one of the $840$ prefixes for each first bag, the
+prefixes are permuted among themselves; so a first bag and its mirror image give the
+same verdict prefix by prefix. Reflection commutes with the exchange of
+Theorem~\ref{thm:swap}, and neither fixes any first bag --- the exchange because the
+first two pieces of a bag are distinct, the mirror because J and L both occur exactly
+once --- so the two together partition the $5040$ orders into $1260$ classes of four,
+which is the form in which the exhaustive computation is worth attempting.
+
 Theorem~\ref{thm:swap} also explains a stronger effect we first met as a coincidence.
 Exchanging $q_0$ and $q_1$ leaves the stash-immediately subtree identical state by
 state, so a search that stashes first and succeeds inside that subtree visits exactly
@@ -667,7 +689,7 @@ all: every one of the nine was sitting in a case that hit the cap, undecided. Th
 need between $3.8 \times 10^7$ and $5.2 \times 10^7$ states to settle. A capped
 search is not a negative result.
 
-Across all thirteen known failures the second-bag prefix is a permutation of
+Across all thirteen failures reported above the second-bag prefix is a permutation of
 $\{O,S,Z\}$ together with one of $J$ or $L$ --- no exception so far. A tempting
 sharper rule, that the failing prefixes end in $\mathrm{ZS}$, is false: the endings
 observed are $\mathrm{ZS}$ eight times, $\mathrm{SZ}$ twice, $\mathrm{OS}$ twice and
@@ -683,7 +705,8 @@ all lay in first bags where $S$ or $Z$ arrives early, so the condition predicted
 would succeed, and all four did. This is consistent with the mechanism one would
 guess --- a vertical I is the main way to resolve an S/Z staircase inside four rows,
 and an I arriving after the staircase has been built cannot undo it, which is the
-direction Burgiel's theorem~\cite{burgiel1997} points in.
+direction Burgiel's theorem~\cite{burgiel1997} points in; see
+also~\cite{brzustowski1992}.
 
 We claim no novelty for this section. The community's own perfect-clear solvers work
 in a more general model --- ours is hard-drop only, so an impossibility here is an
@@ -759,6 +782,7 @@ implementations agreeing on the number of plays in every case.
   \emph{Discrete Math.} \textbf{338} (2015) 130--138.
 \bibitem{kornpak2004} M.~Korn and I.~Pak, Tilings of rectangles with T-tetrominoes,
   \emph{Theoret. Comput. Sci.} \textbf{319} (2004) 3--27.
+% TODO before submission: given names not yet confirmed (surnames only below).
 \bibitem{torresvallejo2024} Torres and Vallejo, Fragments that reduce the gap cap of
   the T-tetromino to six, \emph{Sci. Eng. J.} \textbf{17} (2024) 128--133.
 \bibitem{reid2005} M.~Reid, Klarner systems and tiling boxes with polyominoes,
@@ -767,6 +791,7 @@ implementations agreeing on the number of plays in every case.
   \textbf{81} (1997) 194--200.
 \bibitem{brzustowski1992} J.~Brzustowski, \emph{Can you win at Tetris?},
   MSc thesis, University of British Columbia, 1992.
+% TODO before submission: page range unconfirmed, 97--105 or 94--102 depending on source.
 \bibitem{hoogeboom2004} H.~J. Hoogeboom and W.~A. Kosters, How to construct Tetris
   configurations, \emph{Int. J. Intell. Games Simul.} \textbf{3} (2004) 97--105.
 \bibitem{demaine2003} E.~D. Demaine, S.~Hohenberger and D.~Liben-Nowell, Tetris is

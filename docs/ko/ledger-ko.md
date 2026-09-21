@@ -157,7 +157,7 @@ T 는 2026-09-15 감사 시점에 임의 폭 정리가 없었고 폭별 탐색�
 | **보조정리 Q — 인접 교환은 맨 앞에서만 대칭** | 같은 절 | 같은 명령 | i=0 은 항상 같고, **i ≥ 1 은 L=3..7 전 자리에서 전부 다르다.** 두 집합 크기는 같다 (L=7 이면 64 대 64, 차이 32 대 32) | 2026-09-21 | 확인 |
 | **"I 를 한 칸 앞으로 당기면 손해가 아니다" — 반증** | 같은 절 | `python3 scripts/ipos-family.py` | `wxyz S I Z` → `wxyz I S Z` 72 쌍 중 **68 쌍이 OK→FAIL**, 양쪽 불가능 4, **양쪽 가능 0** | 2026-09-21 | 근거없음 |
 | **닫힌 가족: perm(T,J,L,O)+ISZ × {JOZS,JZOS,OJZS} 72 건 전부 불가능** | 같은 절 | `python3 scripts/ipos-family.py` | 72 건 전부 FAIL, 미결 0. 대칭으로 접을 때 **거울은 bag2 도 같이 바꾼다** | 2026-09-21 | 확인 |
-| 마지막 미결 `JOLTIZS LSOZ` 확정 | 같은 절 | `./bin/fix4 JOLTIZSLSOZ 93000000` | `no PC (46,029,782)`. 2 단계 TMO=3600 에서는 TIMEOUT 이었다. `data/resolved-extra.out` 에 기록 | 2026-09-21 | 확인 |
+| 마지막 미결 `JOLTIZS LSOZ` 확정 | 같은 절 | `./bin/fix4 JOLTIZSLSOZ 93000000` / `./bin/fix5 JOLTIZSLSOZ 93000000` | 둘 다 `no PC`, 상태 수 **46,029,782 로 동일**. 2 단계 TMO=3600 에서는 TIMEOUT 이었다. 46.03M 은 fix5 표 한계 46,976,202 바로 아래라 간신히 들어간다. `data/resolved-extra.out` 에 기록 | 2026-09-21 | 확인 |
 | **정적 불변량으로는 결정 불가** | 같은 절 | `grep -E "TJILSZO OJZS\|TJLISZO OJZS" data/ipos36.out` (원자료) 또는 `./bin/fix4 TJILSZOOJZS 93000000` / `./bin/fix4 TJLISZOOJZS 93000000` | 가능 20,275,435 / 불가능 36,891,439. **도착 multiset 이 같은데 판정이 갈린다** → 놓인 조각의 multiset 만 보는 불변량(T-패리티·열 카운팅·Walkup 류)은 이 문제를 결정할 수 없다 | 2026-09-21 | 확인 |
 | 조건 위반 완료 99 류 중 실패 1 — **비율로 읽지 말 것** | 같은 절 | `python3 scripts/failstats.py` | 완료된 조건 위반 99 류는 **전부 I=7** 이다 (류 목록이 I 위치 내림차순). 남은 982 류는 I 가 1~7 에 퍼져 있다 | 2026-09-21 | 확인 |
 | **실패 9 건의 상태 수 범위 3.8×10⁷ ~ 5.2×10⁷** | 논문 §7, 7-bag §표본 100 개 | `awk '$3=="FAIL" && $4+0>0 {print $4}' data/cap-resolved.out \| sort -n` | 최소 37,968,211 최대 51,979,998 | 2026-09-18 | 확인 |

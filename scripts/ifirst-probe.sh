@@ -35,13 +35,14 @@ export -f probe_one
 todo=$(mktemp)
 while read -r b1 b2; do
   [ -z "${b1:-}" ] && continue
+  case "$b1" in '#'*) continue;; esac
   grep -q "^$b1 $b2 " "$out" 2>/dev/null || echo "$b1 $b2"
 done < "$cases" > "$todo"
 echo "남은 $(grep -c . "$todo") / 전체 $(grep -c . "$cases")"
 
 xargs -a "$todo" -n 2 -P "$par" bash -c 'probe_one "$0" "$1"' >> "$out"
 rm -f "$todo"
-echo "=== 집계 ==="
-awk '{print $3}' "$out" | sort | uniq -c
+echo "=== 집계 (머리 주석 제외) ==="
+awk '!/^#/{print $3}' "$out" | sort | uniq -c
 echo "=== FAIL 이 있으면 반례다 ==="
 grep " FAIL " "$out" || echo "없음"

@@ -44,6 +44,13 @@ def canon(b1, b2):
                 (mirror(hold_swap(b1)), mirror(b2))])
 
 
+# 같은 케이스가 두 줄 이상 있을 수 있다 (2 단계가 겹쳐 돌면 생긴다 — 2026-09-21 에 1 건).
+# **결론(OK/FAIL)이 미결(CAP/TIMEOUT)을 이긴다.** 나중 줄이 이기게 하면
+# 먼저 나온 OK 를 TIMEOUT 이 덮어써서 "아직 안 끝났다" 로 읽힌다.
+# OK 와 FAIL 이 충돌하면 그건 조용히 넘길 일이 아니라 즉시 멈출 일이다.
+RANK = {'OK': 2, 'FAIL': 2, 'CAP': 1, 'TIMEOUT': 1}
+
+
 def load(stage2files):
     verd = {}
     for path in stage2files:
@@ -51,8 +58,13 @@ def load(stage2files):
             continue
         for line in open(path):
             p = line.split()
-            if len(p) >= 3 and p[2] in ('OK', 'FAIL', 'CAP', 'TIMEOUT'):
-                verd[(p[0], p[1])] = p[2]
+            if len(p) >= 3 and p[2] in RANK:
+                k = (p[0], p[1])
+                old = verd.get(k)
+                if old and RANK[old] == 2 and RANK[p[2]] == 2 and old != p[2]:
+                    raise SystemExit(f"충돌: {k} 가 {old} 이면서 {p[2]} 다 ({path})")
+                if old is None or RANK[p[2]] > RANK[old]:
+                    verd[k] = p[2]
     for f in glob.glob('data/sweep1260/*.out'):        # 1 단계의 OK 만 보탠다
         b1 = os.path.basename(f)[:-4]
         for line in open(f):

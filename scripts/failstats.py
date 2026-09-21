@@ -25,16 +25,24 @@ def pos(b1, ch):
     return b1.index(ch) + 1
 
 
-fails = []
-undecided = []
+# 같은 케이스가 두 줄 이상 있을 수 있다 (2 단계가 겹쳐 돌면 생긴다 — 2026-09-21 에 1 건).
+# **결론(OK/FAIL)이 미결(CAP/TIMEOUT)을 이긴다.** 나중 줄 우선으로 읽으면
+# 먼저 나온 OK 를 TIMEOUT 이 덮어써 "아직 안 끝났다" 로 잘못 읽힌다.
+RANK = {'OK': 2, 'FAIL': 2, 'CAP': 1, 'TIMEOUT': 1}
+best = {}
 for line in open(stage2):
     p = line.split()
-    if len(p) < 3:
+    if len(p) < 3 or p[2] not in RANK:
         continue
-    if p[2] == 'FAIL':
-        fails.append((p[0], p[1], p[3] if len(p) > 3 else '-'))
-    elif p[2] in ('CAP', 'TIMEOUT'):
-        undecided.append((p[0], p[1]))
+    k = (p[0], p[1])
+    old = best.get(k)
+    if old and RANK[old[0]] == 2 and RANK[p[2]] == 2 and old[0] != p[2]:
+        raise SystemExit(f"충돌: {k} 가 {old[0]} 이면서 {p[2]} 다")
+    if old is None or RANK[p[2]] > RANK[old[0]]:
+        best[k] = (p[2], p[3] if len(p) > 3 else '-')
+
+fails = [(a, b, s) for (a, b), (v, s) in best.items() if v == 'FAIL']
+undecided = [(a, b) for (a, b), (v, _) in best.items() if v in ('CAP', 'TIMEOUT')]
 
 allc = [l.strip() for l in open(classes) if l.strip()]
 done = sorted(os.path.basename(p)[:-4] for p in glob.glob(outdir + '/*.out'))

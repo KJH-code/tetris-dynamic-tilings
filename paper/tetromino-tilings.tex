@@ -14,6 +14,7 @@
 \newtheorem{theorem}{Theorem}
 \newtheorem{lemma}[theorem]{Lemma}
 \newtheorem{corollary}[theorem]{Corollary}
+\newtheorem{proposition}[theorem]{Proposition}
 \theoremstyle{definition}
 \newtheorem{definition}[theorem]{Definition}
 \theoremstyle{remark}
@@ -674,15 +675,70 @@ first two pieces of a bag are distinct, the mirror because J and L both occur ex
 once --- so the two together partition the $5040$ orders into $1260$ classes of four,
 which is the form in which the exhaustive computation is worth attempting.
 
-Theorem~\ref{thm:swap} also explains a stronger effect we first met as a coincidence.
-Exchanging $q_0$ and $q_1$ leaves the stash-immediately subtree identical state by
-state, so a search that stashes first and succeeds inside that subtree visits exactly
-the same states for both orders; across $1{,}684$ solvable cases the two orders agreed
-on the state count to the digit. The no-stash branch is \emph{not} identical --- an
-I placed before an O reaches boards an O placed before an I cannot --- and it is
-explored only when the search fails. On the first failing pair we tested, the two orders
-agreed on the verdict, as the theorem requires, and differed in state count,
-$38{,}542{,}538$ against $38{,}537{,}388$.
+Lemma~\ref{lem:hold} can be sharpened into a complete description of the plays, which
+is what tells us how far Theorem~\ref{thm:swap} extends.
+
+\begin{lemma}[Chain form]
+\label{lem:chain}
+Write the arrivals as $a_0$ (stashed at once, which costs nothing) followed by the
+stream $a_1 a_2 \ldots a_m$. A play of length $m$ is exactly a choice of positions
+$j_1 < j_2 < \cdots < j_r$ in $\{1, \ldots, m\}$ --- the steps at which the held piece
+is placed. Position $j_k$ receives $a_{j_{k-1}}$, with $j_0 = 0$; every position
+outside the chain receives its own arrival; and $a_{j_r}$ is what remains in the hold.
+\end{lemma}
+
+\begin{proof}
+At each step the player places either the held piece or the arrival, so exactly one
+arrived piece is pending at any time. Placing the held piece at step $j$ makes $a_j$
+pending, which is the passage from $j_k$ to $j_{k+1}$; placing the arrival leaves the
+pending piece unchanged. Reading the chain off a play and building a play from a chain
+are mutually inverse.
+\end{proof}
+
+So one piece at a time may be deferred, and releasing it defers whatever stood in its
+place. Theorem~\ref{thm:swap} now has a second proof: exchanging $a_0$ with $a_1$
+matches the chains $C$ and $C \setminus \{1\}$ or $C \cup \{1\}$ bijectively.
+
+That bijection is special to the front, and the reason is worth stating because it
+bounds what one may hope for.
+
+\begin{proposition}
+\label{prop:adjacent}
+Exchanging two adjacent arrivals $q_i, q_{i+1}$ with $i \geq 1$ does not in general
+preserve the achievable placement sequences, nor even the existence of a perfect clear.
+\end{proposition}
+
+\begin{proof}
+Let $B$ be the board reached before the two steps and $x$ the held piece. Writing
+$a, b$ for the two arrivals, the states available two steps later are
+\[
+\{(Ba, x),\ (Bx, a) \ \text{with } b \text{ pending}\} \cup \{(Bab, x)\},
+\]
+against $\{(Bb, x),\ (Bx, b)\} \cup \{(Bba, x)\}$ after the exchange. The two branches
+that defer one of the pieces coincide; the branch that places both differs, and
+placing $a$ before $b$ reaches boards that placing $b$ before $a$ does not. At the
+front the held piece $x$ does not yet exist, which is why the branches there coincide
+completely. For the verdict, at $w = 10$ and $n = 10$ the first bag $\mathrm{JTLIOSZ}$
+with prefix $\mathrm{LOZS}$ admits no perfect clear while the exchange of its second
+and third arrivals, $\mathrm{JLTIOSZ}$, does.
+\end{proof}
+
+The gap between the two statements of Proposition~\ref{prop:adjacent} is wide in
+practice: over the $250{,}316$ decided pairs available to us the exchange preserved the
+verdict $250{,}293$ times and failed $23$ times. A rule that holds in $99.99\%$ of a
+quarter of a million cases is still not a theorem.
+
+Equality of search cost is likewise no evidence of equivalence, and the two phenomena
+are independent in both directions. Exchanging $q_0$ and $q_1$ leaves the
+stash-immediately subtree identical from the second step onwards, so a search that
+succeeds inside it visits the same states for both orders; across $1{,}684$ solvable
+cases the two orders agreed on the state count to the digit. Yet on the first failing
+pair we tested --- where the no-stash branch, which is not identical, must be explored
+--- the verdicts agreed as the theorem requires while the counts differed,
+$38{,}542{,}538$ against $38{,}537{,}388$. In the other direction the exchange of the
+second and third arrivals, which Proposition~\ref{prop:adjacent} shows need not
+preserve the verdict, frequently preserves the count exactly: two of its four branches
+coincide, and when the search succeeds inside those the totals agree to the digit.
 
 A caution about the computation is worth recording, because it changed the answer.
 Our first pass used a state cap of $8 \times 10^6$ and reported \emph{no} failures at
@@ -690,24 +746,105 @@ all: every one of the nine was sitting in a case that hit the cap, undecided. Th
 need between $3.8 \times 10^7$ and $5.2 \times 10^7$ states to settle. A capped
 search is not a negative result.
 
-Across all thirteen failures reported above the second-bag prefix is a permutation of
-$\{O,S,Z\}$ together with one of $J$ or $L$ --- no exception so far. A tempting
-sharper rule, that the failing prefixes end in $\mathrm{ZS}$, is false: the endings
-observed are $\mathrm{ZS}$ eight times, $\mathrm{SZ}$ twice, $\mathrm{OS}$ twice and
-$\mathrm{OZ}$ once, and the prefix $\mathrm{LSOZ}$ fails after $\mathrm{LJTIOZS}$ but
-succeeds after $\mathrm{TJLISZO}$. Failure is a joint property of the two bags, not
-of the second one alone.
+\subsection*{What the exhaustive computation shows so far}
 
-What the four failing first bags do share is that $S$ and $Z$ both arrive late ---
-in position five or later. Fifteen of our hundred samples have that property and
-three of them fail; the other eighty-five do not fail at all. The condition also
-survived a test made before the computation finished: the last four undecided cases
-all lay in first bags where $S$ or $Z$ arrives early, so the condition predicted they
-would succeed, and all four did. This is consistent with the mechanism one would
-guess --- a vertical I is the main way to resolve an S/Z staircase inside four rows,
-and an I arriving after the staircase has been built cannot undo it, which is the
-direction Burgiel's theorem~\cite{burgiel1997} points in; see
-also~\cite{brzustowski1992}.
+The sweep over the $1260$ classes is running. We report the parts of it that are
+complete, together with counts of the failures found so far; the latter are as of the
+$305$ classes settled at the time of writing and can only grow. Say that a first bag
+is \emph{late} if $S$ and $Z$ both arrive in position five or later. Exactly $180$ of the $1260$ classes are late, and all of them are now
+settled over all $840$ prefixes, with nothing left undecided: of those $151{,}200$
+cases, $92$ admit no perfect clear, and they fall in $31$ of the $180$ classes.
+Arranged by the position of the I piece, the failing classes are
+
+\begin{center}
+\begin{tabular}{lrrrrrr}
+\toprule
+position of I & 1 & 3 & 4 & 5 & 6 & 7 \\
+\midrule
+late classes & 72 & 36 & 36 & 12 & 12 & 12 \\
+of which fail & 0 & 4 & 12 & 12 & 2 & 1 \\
+\bottomrule
+\end{tabular}
+\end{center}
+
+There is no column for position $2$: by Theorem~\ref{thm:swap} the first two arrivals
+are interchangeable, so no class has its I there. Every late class with the I first
+succeeds, every late class with the I fifth fails, and the difficulty falls away again
+at positions six and seven. The effect is therefore not monotone in the position of
+the I, and the naive reading of the table --- that moving the I earlier cannot hurt ---
+is false. Moving it from sixth to fifth turns a possible position into an impossible
+one in $68$ of the $72$ matched pairs, and in none of the $72$ does the earlier I help.
+
+One family is completely decided and is the sharpest impossibility we have.
+
+\begin{theorem}[computer-verified]
+\label{thm:family}
+Let the first bag consist of $T, J, L, O$ in any of the $24$ orders, followed by
+$I, S, Z$, and let the second-bag prefix be one of $\mathrm{JOZS}$, $\mathrm{JZOS}$,
+$\mathrm{OJZS}$. Then no perfect clear exists, in all $72$ cases. Mirroring gives the
+same statement for the tail $I, Z, S$ with the prefixes $\mathrm{LOSZ}$,
+$\mathrm{LSOZ}$, $\mathrm{OLSZ}$.
+\end{theorem}
+
+At the other end, no first bag with the I first has been made to fail. All $72$ late
+classes of that kind are settled over all $840$ prefixes, and the remaining $288$
+classes with the I first were tested against the six prefixes that have produced
+failures, $1728$ cases, all possible and none left undecided. The most expensive of
+those searches settled in $7.9 \times 10^6$ states, an order of magnitude below the
+$3.7$--$5.6 \times 10^7$ that the known failures demand. We stress that this is a probe
+and not a proof: six of $840$ prefixes is under one percent of the untested classes.
+
+A proof of Theorem~\ref{thm:family} by counting is not merely missing but impossible,
+and the obstruction is worth recording because it disqualifies every tool in this
+paper.
+
+\begin{proposition}
+\label{prop:nostatic}
+Whether a perfect clear exists is not a function of the multiset of arriving pieces.
+Consequently no invariant computed from the multiset of placed pieces --- column
+counting as in Lemma~\ref{lem:count}, the parity identity of
+Appendix~\ref{app:parity}, or a Walkup-style argument --- can decide the question.
+\end{proposition}
+
+\begin{proof}
+At $w = 10$, $n = 10$, the arrival sequences $\mathrm{TJILSZO}\,\mathrm{OJZS}$ and
+$\mathrm{TJLISZO}\,\mathrm{OJZS}$ differ by one transposition of adjacent letters and
+so present the same eleven pieces, hence the same candidate multisets of ten placed
+pieces. The first admits a perfect clear and the second does not.
+\end{proof}
+
+Nor does the position of the I determine the verdict on its own, once one leaves the
+family of Theorem~\ref{thm:family}: $\mathrm{JTLIOSZ}$ fails on $\mathrm{LOZS}$ while
+$\mathrm{JLTIOSZ}$ succeeds on it, and both have their I fourth.
+
+\subsection*{Patterns proposed and refuted}
+
+Of the regularities we have proposed for the failing prefixes, one survives and three
+do not. Across all $94$ failures known to us the prefix is a permutation of
+$\{O,S,Z\}$ together with one of $J$ or $L$, without exception; this is the shape the
+mirror lemma forces, and it is the only one that has held.
+
+The others were each supported by every case then available. That the failing prefixes
+end in $\mathrm{ZS}$ broke at thirteen failures; that they end in $S$ or $Z$ broke at
+twenty-nine, on $\mathrm{LZSO}$ after $\mathrm{JOTILSZ}$, and the endings now stand at
+$S$ fifty-nine times, $Z$ thirty and $O$ five. That the failing prefixes take
+only three shapes broke the same day.
+
+The most instructive was the lateness condition. All four failing first bags then known
+were late, fifteen of a hundred sampled bags were late and only those three failed, and
+a prediction recorded before the last four undecided cases were settled --- that they
+would succeed, since none was late --- came out right. It survived until all $180$ late
+classes were settled and the sweep moved on to the rest, where
+$\mathrm{JTZOLSI}\,\mathrm{OJZS}$ and $\mathrm{OSTLJZI}\,\mathrm{OJSZ}$ fail with $Z$
+third and $S$ second respectively. The prediction had in fact tested something else: all
+four of those undecided cases had the I first, which the table above shows to be the
+easy end.
+
+The mechanism one would guess for the lateness condition is still the natural one ---
+a vertical I is the main way to resolve an S/Z staircase inside four rows, and an I
+arriving after the staircase has been built cannot undo it, the direction Burgiel's
+theorem~\cite{burgiel1997} points in; see also~\cite{brzustowski1992}. What the
+computation says is that the guess does not survive contact with the position of the I.
 
 We claim no novelty for this section. The community's own perfect-clear solvers work
 in a more general model --- ours is hard-drop only, so an impossibility here is an

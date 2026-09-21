@@ -139,5 +139,32 @@ def main():
     else:
         print("  반례 없음 (탐색 범위 안에서)")
 
+    # 어떤 도착을 맨 앞으로 옮기면 Plays 가 커지는가?
+    # 커진다면 "맨 앞이 이득" 이 보드와 무관한 정리가 된다. 커지지 않는다.
+    print()
+    print("맨 앞으로 옮기기 — Plays 포함 관계 (참이면 보드와 무관한 정리)")
+
+    def front(q, k):
+        return q[k] + q[:k] + q[k + 1:]
+
+    for label, test in (("Plays(q) ⊆ Plays(맨앞)", lambda A, B: A <= B),
+                        ("Plays(맨앞) ⊆ Plays(q)", lambda A, B: B <= A)):
+        bad = tot = 0
+        ex = None
+        for L in range(3, maxlen + 1):
+            n = L - 1
+            for q in product(alpha[:min(L, 4)], repeat=L):
+                q = ''.join(q)
+                for k in range(2, L):
+                    tot += 1
+                    A, B = plays_rules(q, n), plays_rules(front(q, k), n)
+                    if not test(A, B):
+                        bad += 1
+                        if ex is None:
+                            ex = (q, k, front(q, k), sorted(A - B)[:3], sorted(B - A)[:3])
+        print(f"  {label}: {tot} 개 중 포함 실패 {bad}")
+        if ex:
+            print(f"    예 q={ex[0]} k={ex[1]} -> {ex[2]}   q 만 {ex[3]}   맨앞만 {ex[4]}")
+
 
 main()

@@ -133,8 +133,17 @@ settles it.
 
 Co-Authored-By: Claude Opus 5 <noreply@anthropic.com>
 Claude-Session: https://claude.ai/code/session_0118FaHdVwXoMn8JUHikzaeY"
-    for i in 1 2 3 4; do git push -q origin "$BRANCH" 2>/dev/null && break; sleep $((2**i)); done
-    echo "$(date +%H:%M) committed $n classes, stage2 $res"
+    pushed=no
+    for i in 1 2 3 4 5; do git push -q origin "$BRANCH" 2>>"$WORK/push.err" && { pushed=yes; break; }; sleep $((2**i)); done
+    echo "$(date +%H:%M) committed $n classes, stage2 $res, push=$pushed"
+  fi
+  # 커밋은 됐는데 푸시가 밀린 게 있으면 매 주기마다 다시 시도한다.
+  # 컨테이너가 회수되면 남는 것은 커밋이 아니라 **푸시된 것**이다.
+  behind=$(git log --oneline "origin/$BRANCH..HEAD" 2>/dev/null | wc -l)
+  if [ "$behind" -gt 0 ]; then
+    for i in 1 2 3 4 5; do git push -q origin "$BRANCH" 2>>"$WORK/push.err" && break; sleep $((2**i)); done
+    still=$(git log --oneline "origin/$BRANCH..HEAD" 2>/dev/null | wc -l)
+    echo "$(date +%H:%M) 밀린 커밋 $behind 개 재푸시 -> 남은 $still"
   fi
   sleep 1200
 done' >> "$WORK/autocommit.log" 2>&1 &

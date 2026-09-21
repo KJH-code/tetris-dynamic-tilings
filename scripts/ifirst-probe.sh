@@ -5,7 +5,9 @@
 # 탐침이지 전수가 아니다. 840 접두사 전부가 아니라 **지금까지 실패를 낸 접두사** 만 붙인다.
 # 그래서 "실패 0" 은 "반례가 이 접두사들에는 없다" 는 뜻이지 정리가 아니다.
 #
-# 이미 출력에 있는 케이스는 건너뛴다 (재개 가능).
+# 이미 출력에 있는 케이스는 건너뛴다 (재개 가능). 컨테이너가 재시작되면 같은 줄을 다시 치면 된다:
+#   nohup env PAR=1 ./scripts/ifirst-probe.sh $SCRATCH/ifirst-cases.txt $SCRATCH/ifirst-probe.out &
+# 단 출력 파일이 작업디렉터리에만 있으면 재시작으로 사라진다 — 오래 돌릴 것은 레포에 커밋할 것.
 set -u
 
 export SOLVER=${SOLVER:-./bin/fix4}

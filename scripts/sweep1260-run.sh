@@ -1,6 +1,8 @@
 #!/bin/bash
 # 1,260 류 × 840 접두사 전수를 시작하거나 이어서 돌린다. 재시작 후 이 한 줄이면 된다.
 # 사용법: ./scripts/sweep1260-run.sh [작업디렉터리]   (기본: $SCRATCH/sweep1260 또는 ./.sweep1260)
+#         ./scripts/sweep1260-run.sh [작업디렉터리] --stop          전부 정지
+#         ./scripts/sweep1260-run.sh [작업디렉터리] --commit-only   커밋 루프만 교체
 #
 # 컨테이너가 회수되면 작업디렉터리는 사라지고 레포의 data/sweep1260/ 만 남는다.
 # 그래서 맨 먼저 레포에서 작업디렉터리로 되돌린다 — 이걸 빼먹으면 끝난 류를 다시 돈다.
@@ -16,10 +18,17 @@ set -u
 
 REPO=$(cd "$(dirname "$0")/.." && pwd)
 WORK=${1:-${SCRATCH:-$REPO/.sweep1260}}
+case "$WORK" in --*) WORK=${SCRATCH:-$REPO/.sweep1260};; esac
 BRANCH=${BRANCH:-claude/intelligent-bohr-ejzybx}
 PAR1=${PAR1:-3}   # 1 단계
 PAR2=${PAR2:-1}   # 2 단계
 mkdir -p "$WORK/sweep1260" "$REPO/data/sweep1260"
+
+# --commit-only: 커밋 루프만 다시 띄운다.
+# 커밋 루프만 고쳤을 때 1 단계까지 재시작하면 돌던 류의 .partial 을 버린다
+# (705/840 까지 간 것을 날린 적이 있다). 그럴 때 쓴다.
+ONLY=""
+for a in "$@"; do [ "$a" = "--commit-only" ] && ONLY=commit; done
 
 # --- 중복 실행 방지 ---
 # 두 번 부르면 두 벌이 돌고, 코어를 나눠 쓰느라 전부 느려진다. 같은 bag1 을 두 프로세스가
@@ -38,14 +47,20 @@ if [ "${1:-}" = "--stop" ] || [ "${2:-}" = "--stop" ]; then
     ps -C xargs -o pid= > "$WORK/.k"; while read -r p; do kill "$p" 2>/dev/null; done < "$WORK/.k"
     sleep 1
     ps -C fix4 -o pid= > "$WORK/.k"; while read -r p; do kill "$p" 2>/dev/null; done < "$WORK/.k"
-    rm -f "$WORK/run.pids" "$WORK/.k"
+    rm -f "$WORK/run.pids" "$WORK/.k" "$WORK/commit.pid"
     echo "정지했다."
   else
     echo "$WORK/run.pids 가 없다. 돌고 있는 것이 없거나 다른 작업디렉터리다."
   fi
   exit 0
 fi
-if [ -f "$WORK/run.pids" ]; then
+if [ "$ONLY" = commit ] && [ -f "$WORK/commit.pid" ]; then
+  cp=$(cat "$WORK/commit.pid")
+  kill "$cp" 2>/dev/null
+  grep -vx "$cp" "$WORK/run.pids" > "$WORK/.p" 2>/dev/null; mv "$WORK/.p" "$WORK/run.pids"
+  echo "기존 커밋 루프 $cp 정지"
+fi
+if [ -z "$ONLY" ] && [ -f "$WORK/run.pids" ]; then
   alive=0
   while read -r p; do kill -0 "$p" 2>/dev/null && alive=$((alive+1)); done < "$WORK/run.pids"
   if [ "$alive" -gt 0 ]; then
@@ -56,6 +71,7 @@ if [ -f "$WORK/run.pids" ]; then
   rm -f "$WORK/run.pids"
 fi
 
+if [ -z "$ONLY" ]; then
 # --- 복구: 레포에 커밋된 완료분을 작업디렉터리로 되돌린다 ---
 cp -n "$REPO/data/sweep1260"/*.out "$WORK/sweep1260/" 2>/dev/null
 rm -f "$WORK/sweep1260"/*.partial
@@ -88,6 +104,9 @@ while true; do
 done' >> "$WORK/stage2.log" 2>&1 &
 echo $! >> "$WORK/run.pids"
 echo "2 단계 루프 시작 (PAR=$PAR2, 30 분 주기)"
+fi
+
+cd "$REPO"
 
 # --- 커밋: 20 분마다 ---
 nohup bash -c '
@@ -148,6 +167,7 @@ Claude-Session: https://claude.ai/code/session_0118FaHdVwXoMn8JUHikzaeY"
   sleep 1200
 done' >> "$WORK/autocommit.log" 2>&1 &
 echo $! >> "$WORK/run.pids"
+echo $! > "$WORK/commit.pid"
 echo "커밋 루프 시작 (20 분 주기)"
 echo
 echo "로그: $WORK/sweep1260.log  $WORK/stage2.log  $WORK/autocommit.log"

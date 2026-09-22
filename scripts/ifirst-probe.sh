@@ -22,11 +22,17 @@ touch "$out"
 probe_one() {
   b1=$1; b2=$2
   r=$(timeout "$TMO" "$SOLVER" "$b1$b2" "$CAP" 2>/dev/null)
+  rc=$?
   states=$(printf '%s' "$r" | sed -n 's/.*states \([0-9]*\).*/\1/p')
   case "$r" in
     *"PC POSSIBLE"*)  echo "$b1 $b2 OK $states" ;;
     *"INCONCLUSIVE"*) echo "$b1 $b2 CAP $states" ;;
-    "")               echo "$b1 $b2 TIMEOUT -" ;;
+    "")
+      # **빈 출력을 전부 TIMEOUT 으로 적으면 안 된다.** timeout 은 실제 시간 초과에
+      # 124 를 주고, 그 밖의 0 아닌 값은 풀이가 **다른 이유로 죽은 것**이다.
+      # 컨테이너 체크포인트가 자식만 죽이면 여기로 온다 — 2026-09-22 에 1 초면
+      # 끝나는 케이스 세 건이 TIMEOUT 으로 기록됐다. 재시도 가능한 것으로 따로 적는다.
+      if [ "$rc" -eq 124 ]; then echo "$b1 $b2 TIMEOUT -"; else echo "$b1 $b2 KILLED rc$rc"; fi ;;
     *)                echo "$b1 $b2 FAIL $states" ;;
   esac
 }
@@ -36,7 +42,9 @@ todo=$(mktemp)
 while read -r b1 b2; do
   [ -z "${b1:-}" ] && continue
   case "$b1" in '#'*) continue;; esac
-  grep -q "^$b1 $b2 " "$out" 2>/dev/null || echo "$b1 $b2"
+  # **결론(OK/FAIL)만 건너뛴다.** CAP·TIMEOUT·KILLED 는 결론이 아니므로 다시 돈다 —
+  # 옛 방식(줄이 있으면 건너뛰기)은 거짓 TIMEOUT 하나를 영구 미결로 굳혔다 (2026-09-22).
+  grep -qE "^$b1 $b2 (OK|FAIL) " "$out" 2>/dev/null || echo "$b1 $b2"
 done < "$cases" > "$todo"
 echo "남은 $(grep -c . "$todo") / 전체 $(grep -c . "$cases")"
 

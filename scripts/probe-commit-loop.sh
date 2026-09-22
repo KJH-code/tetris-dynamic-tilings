@@ -29,11 +29,12 @@ while true; do
     n=$(awk '!/^#/' "${files[0]}" 2>/dev/null | grep -c . || true)
     for i in 1 2 3; do
       git add "${files[@]}" 2>/dev/null && \
-      git commit -q -m "data: I-first probe at ${n:-?} cases
+      git commit -q -m "data: $(basename "${files[0]}" .out) at ${n:-?} cases
 
-A probe, not an exhaustive run: only the six prefixes that have
-produced failures so far are attached, so zero failures here means
-no counterexample among those prefixes, not a theorem.
+A probe, not an exhaustive run: only the prefixes that have produced
+failures so far are attached, so zero failures here means no
+counterexample among those prefixes, not a theorem. The file's own
+header states which prefixes and in what order.
 
 Co-Authored-By: Claude Opus 5 <noreply@anthropic.com>
 Claude-Session: https://claude.ai/code/session_0118FaHdVwXoMn8JUHikzaeY" && break

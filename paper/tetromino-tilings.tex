@@ -603,35 +603,17 @@ placements consume at most eleven arrivals, so only the first four pieces of the
 second bag matter, giving $P(7,4) = 840$ prefixes to consider for each of the
 $7! = 5040$ orders of the first bag.
 
-We sampled $100$ first bags uniformly from the $5040$ with a fixed seed and settled
-all $840$ prefixes for each: $84{,}000$ cases. Nine fail. They fall in three first
-bags, three apiece:
-\[
-\begin{array}{ll}
-\mathrm{LJTIOZS}: & \mathrm{OLSZ},\ \mathrm{LOSZ},\ \mathrm{LSOZ} \\
-\mathrm{LOTJISZ}: & \mathrm{OJZS},\ \mathrm{JOZS},\ \mathrm{JZOS} \\
-\mathrm{TLJOISZ}: & \mathrm{OJZS},\ \mathrm{JOZS},\ \mathrm{JZOS}
-\end{array}
-\]
-The other $97$ first bags admit a perfect clear for every prefix, so the failure rate
-over the sample is $9/84{,}000 \approx 1.1 \times 10^{-4}$. An earlier first bag,
-$\mathrm{TJLISZO}$, was settled separately and fails on four prefixes
-($\mathrm{OJZS}$, $\mathrm{OLZS}$, $\mathrm{LOZS}$, $\mathrm{JOZS}$).
+A sample of $100$ first bags, all $840$ prefixes each, gave nine failures in three
+bags --- a rate of $1.1 \times 10^{-4}$ over the sample --- and a fourth bag,
+$\mathrm{TJLISZO}$, had been settled earlier with four. Those thirteen were all we had
+when the structural results below were found; the exhaustive sweep has since
+superseded them, and we quote it instead.
 
-One structural fact halves the work for anyone repeating this.
-
-\begin{lemma}
-\label{lem:hold}
-The hold slot is empty on an initial segment of the play and never afterwards, so a
-play stashes at most once.
-\end{lemma}
-
-\begin{proof}
-A move either places the arriving piece and leaves the hold unchanged, or places the
-held piece and puts the arriving one in its place, or --- only from an empty hold ---
-stashes the arriving piece without placing anything. The last two leave the hold
-occupied, and a stash requires it empty.
-\end{proof}
+Two structural facts cut the work. The first is that the hold slot is empty only on an
+initial segment of the play: a move either places the arrival and leaves the hold
+alone, or places the held piece and puts the arrival in its place, or --- only from an
+empty hold --- stashes the arrival without placing anything. The last two leave the
+hold occupied, so a play stashes at most once.
 
 Write $\mathrm{HG}_m(h; s_1 s_2 \ldots)$ for the set of length-$m$ sequences the player
 can place starting from hold $h$ with $s_1, s_2, \ldots$ arriving, each step placing
@@ -652,7 +634,7 @@ changes neither the achievable placement sequences nor whether a perfect clear e
 The two terms are the two continuations after stashing $q_0$ immediately, so they are
 achievable. For the converse, note that inside $\mathrm{HG}$ the move ``place the held
 piece, keep the arrival'' repeated from hold $q_1$ emits $q_1, q_2, q_3, \ldots$ in
-order. By Lemma~\ref{lem:hold} a play either never stashes, giving
+order. Since a play stashes at most once, it either never stashes, giving
 $q_0 q_1 \ldots q_{n-1}$, which is $q_0$ followed by $n-1$ such repetitions and needs
 the arrival $q_n$ --- the one place where $L \geq n+1$ is used --- or stashes once, at
 $q_k$ say, giving $q_0 \ldots q_{k-1}$ followed by $\mathrm{HG}_{n-k}(q_k; q_{k+1}
@@ -666,41 +648,25 @@ a bad partner. The hypothesis is not decorative: with $L = n$ no stash is possib
 the play is forced, and among sequences of four pieces at width $4$ there are $66$ pairs
 differing only in their first two entries where one clears and the other does not.
 
-The mirror of Lemma~\ref{lem:mirror} acts here too. Reflecting a play reflects both
-bags at once, and since we run every one of the $840$ prefixes for each first bag, the
-prefixes are permuted among themselves; so a first bag and its mirror image give the
-same verdict prefix by prefix. Reflection commutes with the exchange of
-Theorem~\ref{thm:swap}, and neither fixes any first bag --- the exchange because the
-first two pieces of a bag are distinct, the mirror because J and L both occur exactly
-once --- so the two together partition the $5040$ orders into $1260$ classes of four,
-which is the form in which the exhaustive computation is worth attempting.
+The mirror of Lemma~\ref{lem:mirror} acts here too: reflecting a play reflects both
+bags at once and permutes the $840$ prefixes among themselves, so a first bag and its
+mirror agree prefix by prefix. Reflection commutes with the exchange, and neither
+fixes any first bag --- the exchange because the first two pieces of a bag are
+distinct, the mirror because J and L each occur once --- so together they cut the
+$5040$ orders to $1260$ classes of four, which is the form in which the exhaustive
+computation is worth attempting.
 
-Lemma~\ref{lem:hold} can be sharpened into a complete description of the plays, which
-is what tells us how far Theorem~\ref{thm:swap} extends.
+The description of plays can be sharpened, and the sharper form says how far
+Theorem~\ref{thm:swap} extends. Stash the first arrival at once --- by the theorem
+this costs nothing --- and call it $a_0$, with $a_1 a_2 \ldots a_m$ arriving after.
+Exactly one arrived piece is pending at any time, so a play is precisely a choice of
+the steps $j_1 < \cdots < j_r$ at which the held piece is placed: step $j_k$ receives
+$a_{j_{k-1}}$ (with $j_0 = 0$), every other step receives its own arrival, and
+$a_{j_r}$ is left in the hold. One piece at a time may be deferred, and releasing it
+defers whatever stood in its place. In this form Theorem~\ref{thm:swap} is the
+bijection $C \leftrightarrow C \bigtriangleup \{1\}$ between chains.
 
-\begin{lemma}[Chain form]
-\label{lem:chain}
-Write the arrivals as $a_0$ (stashed at once, which costs nothing) followed by the
-stream $a_1 a_2 \ldots a_m$. A play of length $m$ is exactly a choice of positions
-$j_1 < j_2 < \cdots < j_r$ in $\{1, \ldots, m\}$ --- the steps at which the held piece
-is placed. Position $j_k$ receives $a_{j_{k-1}}$, with $j_0 = 0$; every position
-outside the chain receives its own arrival; and $a_{j_r}$ is what remains in the hold.
-\end{lemma}
-
-\begin{proof}
-At each step the player places either the held piece or the arrival, so exactly one
-arrived piece is pending at any time. Placing the held piece at step $j$ makes $a_j$
-pending, which is the passage from $j_k$ to $j_{k+1}$; placing the arrival leaves the
-pending piece unchanged. Reading the chain off a play and building a play from a chain
-are mutually inverse.
-\end{proof}
-
-So one piece at a time may be deferred, and releasing it defers whatever stood in its
-place. Theorem~\ref{thm:swap} now has a second proof: exchanging $a_0$ with $a_1$
-matches the chains $C$ and $C \setminus \{1\}$ or $C \cup \{1\}$ bijectively.
-
-That bijection is special to the front, and the reason is worth stating because it
-bounds what one may hope for.
+That bijection is special to the front.
 
 \begin{proposition}
 \label{prop:adjacent}
@@ -709,42 +675,28 @@ preserve the achievable placement sequences, nor even the existence of a perfect
 \end{proposition}
 
 \begin{proof}
-Let $B$ be the board reached before the two steps and $x$ the held piece. Writing
-$a, b$ for the two arrivals, the states available two steps later are
-\[
-\{(Ba, x),\ (Bx, a) \ \text{with } b \text{ pending}\} \cup \{(Bab, x)\},
-\]
-against $\{(Bb, x),\ (Bx, b)\} \cup \{(Bba, x)\}$ after the exchange. The two branches
-that defer one of the pieces coincide; the branch that places both differs, and
-placing $a$ before $b$ reaches boards that placing $b$ before $a$ does not. At the
-front the held piece $x$ does not yet exist, which is why the branches there coincide
-completely. For the verdict, at $w = 10$ and $n = 10$ the first bag $\mathrm{JTLIOSZ}$
-with prefix $\mathrm{LOZS}$ admits no perfect clear while the exchange of its second
-and third arrivals, $\mathrm{JLTIOSZ}$, does.
+Let $B$ be the board reached before the two steps, $x$ the held piece and $a, b$ the
+two arrivals. Two steps later the reachable states are $(Ba, x)$ and $(Bx, a)$ with
+$b$ pending, which the exchange fixes, together with $(Bab, x)$, which it sends to
+$(Bba, x)$; and placing $a$ before $b$ reaches boards that placing $b$ before $a$ does
+not. At the front there is no held piece $x$, which is why the branches coincide there
+and nowhere else. For the verdict, at $w = 10$ and $n = 10$ the first bag
+$\mathrm{JTLIOSZ}$ with prefix $\mathrm{LOZS}$ admits no perfect clear while
+$\mathrm{JLTIOSZ}$, its exchange of the second and third arrivals, does.
 \end{proof}
 
-The gap between the two statements of Proposition~\ref{prop:adjacent} is wide in
-practice: over the $250{,}316$ decided pairs available to us the exchange preserved the
-verdict $250{,}293$ times and failed $23$ times. A rule that holds in $99.99\%$ of a
-quarter of a million cases is still not a theorem.
+The counterexamples are scarce: over the $250{,}316$ decided pairs available to us the
+exchange preserved the verdict $250{,}293$ times and failed $23$. A rule that holds in
+$99.99\%$ of a quarter of a million cases is still not a theorem. Equality of search
+cost is no evidence either, and fails in both directions: exchanging $q_0$ and $q_1$
+agreed on the state count to the digit across $1{,}684$ solvable cases but differed on
+the first failing pair ($38{,}542{,}538$ against $38{,}537{,}388$), while the exchange
+of Proposition~\ref{prop:adjacent}, which need not preserve the verdict, often
+preserves the count exactly --- two of its four branches coincide.
 
-Equality of search cost is likewise no evidence of equivalence, and the two phenomena
-are independent in both directions. Exchanging $q_0$ and $q_1$ leaves the
-stash-immediately subtree identical from the second step onwards, so a search that
-succeeds inside it visits the same states for both orders; across $1{,}684$ solvable
-cases the two orders agreed on the state count to the digit. Yet on the first failing
-pair we tested --- where the no-stash branch, which is not identical, must be explored
---- the verdicts agreed as the theorem requires while the counts differed,
-$38{,}542{,}538$ against $38{,}537{,}388$. In the other direction the exchange of the
-second and third arrivals, which Proposition~\ref{prop:adjacent} shows need not
-preserve the verdict, frequently preserves the count exactly: two of its four branches
-coincide, and when the search succeeds inside those the totals agree to the digit.
-
-A caution about the computation is worth recording, because it changed the answer.
-Our first pass used a state cap of $8 \times 10^6$ and reported \emph{no} failures at
-all: every one of the nine was sitting in a case that hit the cap, undecided. They
-need between $3.8 \times 10^7$ and $5.2 \times 10^7$ states to settle. A capped
-search is not a negative result.
+One caution about the computation changed an answer for us. A first pass with a state
+cap of $8 \times 10^6$ reported \emph{no} failures at all: each was sitting in a case
+that hit the cap, undecided. A capped search is not a negative result.
 
 \subsection*{What the exhaustive computation shows so far}
 
@@ -786,17 +738,15 @@ same statement for the tail $I, Z, S$ with the prefixes $\mathrm{LOSZ}$,
 $\mathrm{LSOZ}$, $\mathrm{OLSZ}$.
 \end{theorem}
 
-At the other end, no first bag with the I first has been made to fail. All $72$ late
-classes of that kind are settled over all $840$ prefixes, and the remaining $288$
-classes with the I first were tested against the six prefixes that have produced
-failures, $1728$ cases, all possible and none left undecided. The most expensive of
-those searches settled in $7.9 \times 10^6$ states, an order of magnitude below the
-$3.7$--$5.6 \times 10^7$ that the known failures demand. We stress that this is a probe
-and not a proof: six of $840$ prefixes is under one percent of the untested classes.
+At the other end, no first bag with the I first has been made to fail: the $72$ late
+classes of that kind are settled over all $840$ prefixes, and the other $288$ were
+tested against the six prefixes that have produced failures, all $1728$ cases possible
+and none undecided. The most expensive settled in $7.9 \times 10^6$ states, an order
+of magnitude below the $3.7$--$5.6 \times 10^7$ the known failures demand. This is a
+probe, not a proof: six of $840$ prefixes is under one percent.
 
 A proof of Theorem~\ref{thm:family} by counting is not merely missing but impossible,
-and the obstruction is worth recording because it disqualifies every tool in this
-paper.
+and the obstruction disqualifies every tool in this paper.
 
 \begin{proposition}
 \label{prop:nostatic}
@@ -817,34 +767,28 @@ Nor does the position of the I determine the verdict on its own, once one leaves
 family of Theorem~\ref{thm:family}: $\mathrm{JTLIOSZ}$ fails on $\mathrm{LOZS}$ while
 $\mathrm{JLTIOSZ}$ succeeds on it, and both have their I fourth.
 
-\subsection*{Patterns proposed and refuted}
+Of the regularities we proposed for the failing prefixes, one survives: across all
+$94$ failures known to us the prefix is a permutation of $\{O,S,Z\}$ together with one
+of $J$ or $L$, without exception, which is the shape the mirror lemma forces. Three
+others broke, each having held for every case then available --- that the prefixes end
+in $\mathrm{ZS}$, that they end in $S$ or $Z$ (the endings now stand at $S$ fifty-nine
+times, $Z$ thirty and $O$ five), and that they take only three shapes.
 
-Of the regularities we have proposed for the failing prefixes, one survives and three
-do not. Across all $94$ failures known to us the prefix is a permutation of
-$\{O,S,Z\}$ together with one of $J$ or $L$, without exception; this is the shape the
-mirror lemma forces, and it is the only one that has held.
+The most instructive was the lateness condition. Every failing first bag then known
+was late; of a hundred sampled bags, fifteen were late and only three of those failed;
+and a prediction recorded before the last undecided cases were settled --- that they
+would succeed, none being late --- came out right. It survived until the $180$ late
+classes were done and the sweep moved on, where $\mathrm{JTZOLSI}\,\mathrm{OJZS}$ and
+$\mathrm{OSTLJZI}\,\mathrm{OJSZ}$ fail with $Z$ third and $S$ second. The prediction
+had in fact tested something else: all four of those cases had the I first, which the
+table above shows to be the easy end. A confirmed prediction need not confirm the
+reason it was made for.
 
-The others were each supported by every case then available. That the failing prefixes
-end in $\mathrm{ZS}$ broke at thirteen failures; that they end in $S$ or $Z$ broke at
-twenty-nine, on $\mathrm{LZSO}$ after $\mathrm{JOTILSZ}$, and the endings now stand at
-$S$ fifty-nine times, $Z$ thirty and $O$ five. That the failing prefixes take
-only three shapes broke the same day.
-
-The most instructive was the lateness condition. All four failing first bags then known
-were late, fifteen of a hundred sampled bags were late and only those three failed, and
-a prediction recorded before the last four undecided cases were settled --- that they
-would succeed, since none was late --- came out right. It survived until all $180$ late
-classes were settled and the sweep moved on to the rest, where
-$\mathrm{JTZOLSI}\,\mathrm{OJZS}$ and $\mathrm{OSTLJZI}\,\mathrm{OJSZ}$ fail with $Z$
-third and $S$ second respectively. The prediction had in fact tested something else: all
-four of those undecided cases had the I first, which the table above shows to be the
-easy end.
-
-The mechanism one would guess for the lateness condition is still the natural one ---
-a vertical I is the main way to resolve an S/Z staircase inside four rows, and an I
-arriving after the staircase has been built cannot undo it, the direction Burgiel's
-theorem~\cite{burgiel1997} points in; see also~\cite{brzustowski1992}. What the
-computation says is that the guess does not survive contact with the position of the I.
+The mechanism one would guess for lateness remains natural --- a vertical I is the main
+way to resolve an S/Z staircase inside four rows, and an I arriving after the staircase
+is built cannot undo it, the direction Burgiel's theorem~\cite{burgiel1997} points in;
+see also~\cite{brzustowski1992}. The computation says the guess does not survive
+contact with the position of the I.
 
 We claim no novelty for this section. The community's own perfect-clear solvers work
 in a more general model --- ours is hard-drop only, so an impossibility here is an

@@ -1,3 +1,6 @@
+// 동적 T-패리티 항등식을 퍼펙트 클리어 플레이 수열 전수로 검증한다 (dedup 없이 완전 열거).
+// 입력: argv[1]=폭 w, argv[2]=조각 수 n, argv[3]=조각 마스크 (기본 127).
+// 출력: PC 수열 개수와 네 항목(per-event / global / sum(A) odd / readable)의 실패 건수. 전부 0 이어야 정상.
 #include <bits/stdc++.h>
 using namespace std;
 typedef unsigned __int128 bb;
@@ -161,6 +164,12 @@ int main(int argc, char **argv) {
     if ((4*target) % w != 0) { printf("w=%d n=%d: skip\n", w, target); return 0; }
     totclear = 4*target/w;
     hcap = totclear + 4;
+    // 보드 비트폭. bitindex 최대값이 hcap*w-1 이므로 hcap*w <= 128 이어야 한다.
+    // 넘으면 상위 비트가 조용히 잘려 전수 개수와 패리티 판정이 모두 무의미해진다 (2026-09-15 추가).
+    if (hcap * w > 128) {
+        printf("w=%d n=%d: REFUSED  hcap*w = %d > 128, board does not fit __int128\n", w, target, hcap * w);
+        return 2;
+    }
     buildorientations();
     dfs((bb)0, 0, 0, 0, 0, 0, 0);
     printf("w=%2d n=%2d | PC: %lld | per-event [dphi = -2D-A mod 4] fail: %lld | global [sum dphi = 2#T mod 4] fail: %lld | sum(A) odd: %lld | readable [#T = sumD + sumA/2 mod 2] fail: %lld\n",

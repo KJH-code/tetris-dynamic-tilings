@@ -1,3 +1,6 @@
+// seq.cpp 와 같은 고정 수열 탐색이되, 단계마다 phi 와 클리어 보정항을 함께 찍는다 (A 항등식 손검산용).
+// 입력: argv[1]=폭 w, argv[2]=조각 문자열.
+// 출력: step 별 "phi X->Y | clear-corr Z" 와 마지막에 #T 및 보정항 합.
 #include <bits/stdc++.h>
 using namespace std;
 typedef unsigned __int128 bb;
@@ -107,6 +110,11 @@ int main(int argc, char **argv) {
     for (size_t i = 0; i < s.size(); i++) seq.push_back((int)names.find(s[i]));
     totclear = 4*(int)seq.size()/w;
     hcap = totclear + 4;
+    // 보드 비트폭. hcap*w <= 128 이어야 한다. 넘으면 조용히 틀린다 (2026-09-15 추가).
+    if (hcap * w > 128) {
+        printf("w=%d seq=%s: REFUSED  hcap*w = %d > 128, board does not fit __int128\n", w, argv[2], hcap * w);
+        return 2;
+    }
     buildorientations();
     if (!dfs(0, 0, 0)) { printf("w=%d seq=%s : NO perfect clear\n", w, argv[2]); return 0; }
     printf("w=%d seq=%s : PERFECT CLEAR FOUND\n", w, argv[2]);

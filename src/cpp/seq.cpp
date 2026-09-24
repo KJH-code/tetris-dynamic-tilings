@@ -1,3 +1,6 @@
+// 조각 수열이 고정됐을 때 (홀드 없음, 하드드롭 전용) 퍼펙트 클리어를 찾고 단계별 보드를 출력한다.
+// 입력: argv[1]=폭 w, argv[2]=조각 문자열 (I O T S Z J L 문자, 예 OTJ).
+// 출력: "PERFECT CLEAR FOUND" + step 별 배치와 보드, 또는 "NO perfect clear".
 #include <bits/stdc++.h>
 using namespace std;
 typedef unsigned __int128 bb;
@@ -107,6 +110,11 @@ int main(int argc, char **argv) {
     for (size_t i = 0; i < s.size(); i++) seq.push_back((int)names.find(s[i]));
     totclear = 4*(int)seq.size()/w;
     hcap = totclear + 4;
+    // 보드 비트폭. hcap*w <= 128 이어야 한다. 넘으면 조용히 틀린다 (2026-09-15 추가).
+    if (hcap * w > 128) {
+        printf("w=%d seq=%s: REFUSED  hcap*w = %d > 128, board does not fit __int128\n", w, argv[2], hcap * w);
+        return 2;
+    }
     buildorientations();
     if (!dfs(0, 0, 0)) { printf("w=%d seq=%s : NO perfect clear\n", w, argv[2]); return 0; }
     printf("w=%d seq=%s : PERFECT CLEAR FOUND\n", w, argv[2]);

@@ -5,3 +5,9 @@ __pycache__/
 *.pyc
 tmp/
 *.tmp
+
+# LaTeX build artefacts (the PDF itself is committed as the preprint)
+paper/*.aux
+paper/*.log
+paper/*.out
+paper/*.toc

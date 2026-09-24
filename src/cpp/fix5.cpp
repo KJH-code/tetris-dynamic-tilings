@@ -1,3 +1,10 @@
+// fix4.cpp 와 같은 고정 수열 7-bag 솔버인데, 메모 키를 지문 없이 완전한 128 비트로 쓴다 (교차검증용).
+// 입력: argv[1]=도착 수열, argv[2]=상태 상한 (기본 3000000).
+// 출력: "<수열> : PC POSSIBLE | no PC | INCONCLUSIVE (cap)   (states N)".
+//
+// 표가 2^26 슬롯이라 내부 적재율 한계가 TSIZE/10*7 = 46,976,202 다. 이 한계에 걸리면
+// 보고되는 상태 수가 46,976,203 으로 고정되는데, 그 값을 보면 "탐색 실패" 가 아니라
+// "표가 찼다" 로 읽어야 한다. 그때는 표가 두 배인 fix4 로 다시 돌린다.
 #include <bits/stdc++.h>
 using namespace std;
 typedef unsigned __int128 u128;

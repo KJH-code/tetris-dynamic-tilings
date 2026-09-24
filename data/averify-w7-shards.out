@@ -1,0 +1,28 @@
+# A 항등식 독립 구현(averify.py)의 w=7 n=7 전수 — 루트 16 분할 (2026-09-19)
+# 생성: for s in 0..15; python3 -u src/py/averify.py --shard=$s/16 7 7
+#       (4 코어에 4 개씩, 전체 약 5 시간. 단일 프로세스로는 9~19 시간 추정이었다)
+#
+# 샤드 합 4,498,382 = verify.cpp 의 개수와 자리까지 일치.
+# 이 일치가 두 가지를 동시에 보장한다:
+#   (1) 루트 분할에 빠짐도 겹침도 없었다
+#   (2) 독립 구현 둘이 w=7 에서도 개수까지 맞는다
+# 네 검사 항목과 'D 두 정의 mod2 불일치' 가 16 샤드 전부 0 이다.
+#
+w= 7 n= 7 [shard 0/16] | PC: 381584 | per-event fail: 0 | global fail: 0 | sum(A) odd: 0 | readable fail: 0 | D 두 정의 mod2 불일치: 0
+w= 7 n= 7 [shard 1/16] | PC: 302577 | per-event fail: 0 | global fail: 0 | sum(A) odd: 0 | readable fail: 0 | D 두 정의 mod2 불일치: 0
+w= 7 n= 7 [shard 2/16] | PC: 349099 | per-event fail: 0 | global fail: 0 | sum(A) odd: 0 | readable fail: 0 | D 두 정의 mod2 불일치: 0
+w= 7 n= 7 [shard 3/16] | PC: 289054 | per-event fail: 0 | global fail: 0 | sum(A) odd: 0 | readable fail: 0 | D 두 정의 mod2 불일치: 0
+w= 7 n= 7 [shard 4/16] | PC: 394804 | per-event fail: 0 | global fail: 0 | sum(A) odd: 0 | readable fail: 0 | D 두 정의 mod2 불일치: 0
+w= 7 n= 7 [shard 5/16] | PC: 231661 | per-event fail: 0 | global fail: 0 | sum(A) odd: 0 | readable fail: 0 | D 두 정의 mod2 불일치: 0
+w= 7 n= 7 [shard 6/16] | PC: 241896 | per-event fail: 0 | global fail: 0 | sum(A) odd: 0 | readable fail: 0 | D 두 정의 mod2 불일치: 0
+w= 7 n= 7 [shard 7/16] | PC: 272673 | per-event fail: 0 | global fail: 0 | sum(A) odd: 0 | readable fail: 0 | D 두 정의 mod2 불일치: 0
+w= 7 n= 7 [shard 8/16] | PC: 314462 | per-event fail: 0 | global fail: 0 | sum(A) odd: 0 | readable fail: 0 | D 두 정의 mod2 불일치: 0
+w= 7 n= 7 [shard 9/16] | PC: 159075 | per-event fail: 0 | global fail: 0 | sum(A) odd: 0 | readable fail: 0 | D 두 정의 mod2 불일치: 0
+w= 7 n= 7 [shard 10/16] | PC: 328303 | per-event fail: 0 | global fail: 0 | sum(A) odd: 0 | readable fail: 0 | D 두 정의 mod2 불일치: 0
+w= 7 n= 7 [shard 11/16] | PC: 255358 | per-event fail: 0 | global fail: 0 | sum(A) odd: 0 | readable fail: 0 | D 두 정의 mod2 불일치: 0
+w= 7 n= 7 [shard 12/16] | PC: 188861 | per-event fail: 0 | global fail: 0 | sum(A) odd: 0 | readable fail: 0 | D 두 정의 mod2 불일치: 0
+w= 7 n= 7 [shard 13/16] | PC: 353583 | per-event fail: 0 | global fail: 0 | sum(A) odd: 0 | readable fail: 0 | D 두 정의 mod2 불일치: 0
+w= 7 n= 7 [shard 14/16] | PC: 223893 | per-event fail: 0 | global fail: 0 | sum(A) odd: 0 | readable fail: 0 | D 두 정의 mod2 불일치: 0
+w= 7 n= 7 [shard 15/16] | PC: 211499 | per-event fail: 0 | global fail: 0 | sum(A) odd: 0 | readable fail: 0 | D 두 정의 mod2 불일치: 0
+#
+# 합계 4498382

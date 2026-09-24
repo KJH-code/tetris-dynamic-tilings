@@ -1,3 +1,9 @@
+// 도착 수열을 고정한 7-bag 퍼펙트 클리어 솔버 (홀드 1 칸, 하드드롭 전용, w=10 / n=10 / R=4 고정).
+// 입력: argv[1]=도착 수열 (예 IOTSZJLOJSZ, bag1 7 자 + bag2 접두사), argv[2]=상태 상한 (기본 3000000).
+// 출력: "<수열> : PC POSSIBLE | no PC | INCONCLUSIVE (cap)   (states N)". INCONCLUSIVE 는 결론이 아니다.
+//
+// 메모는 2^27 슬롯 개방 주소법 + 64 비트 지문. 내부 적재율 한계는 TSIZE/10*7 = 93,952,404 이고
+// argv[2] 상한과 둘 중 먼저 걸리는 쪽에서 INCONCLUSIVE 가 난다.
 #include <bits/stdc++.h>
 using namespace std;
 typedef unsigned __int128 u128;

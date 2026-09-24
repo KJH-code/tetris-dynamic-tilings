@@ -1,0 +1,888 @@
+% Tetromino tilings with line clears
+% Draft for The Mathematical Gazette (Article).
+% Every numerical claim in this paper has a row in the project's verification
+% ledger with the command that reproduces it; see the repository.
+\documentclass[11pt,a4paper]{article}
+
+\usepackage[margin=2.5cm]{geometry}
+\usepackage{amsmath,amssymb,amsthm}
+\usepackage{booktabs}
+\usepackage{graphicx}
+\usepackage[hidelinks]{hyperref}
+
+\theoremstyle{plain}
+\newtheorem{theorem}{Theorem}
+\newtheorem{lemma}[theorem]{Lemma}
+\newtheorem{corollary}[theorem]{Corollary}
+\newtheorem{proposition}[theorem]{Proposition}
+\theoremstyle{definition}
+\newtheorem{definition}[theorem]{Definition}
+\theoremstyle{remark}
+\newtheorem{remark}[theorem]{Remark}
+
+\newcommand{\board}{B}
+\newcommand{\Tet}{\mathrm{T}}
+
+\title{Tetromino tilings with line clears}
+\author{Jaehyeok Kim\\[2pt]
+\small Seoul Science High School, Seoul, Republic of Korea}
+\date{\today}
+
+\begin{document}
+\maketitle
+
+\begin{abstract}
+Walkup proved in 1965 that a $w \times n$ rectangle can be tiled by T-tetrominoes
+exactly when $4 \mid w$ and $4 \mid n$, and a line of later work measured how badly
+other rectangles fail. We ask the same question in a \emph{dynamic} setting: pieces
+fall one at a time under gravity, and any row that becomes full is deleted. A
+\emph{perfect clear} is a play that starts from the empty board and returns to it.
+
+Line clears collapse the static obstruction almost completely. Four of the seven
+tetromino types --- I, T, J and L --- admit a perfect clear at every width $w \geq 4$,
+and O admits one at every even width; we determine the minimum number of pieces in
+each case, for all widths. The two exceptions are S and Z, which admit no perfect
+clear at any width, alone or together. The classification extends to every subset of
+the seven types.
+
+The contrast with the static theory is sharpest for T, where Walkup's condition
+reappears \emph{inside} the dynamic construction: the part of the construction that
+uses no line clears is exactly a static tiling, so its width must be a multiple of
+four, and the line clears cover precisely the residues that static tiling forbids.
+\end{abstract}
+
+\section{Introduction}
+
+A tetromino is a polyomino with four cells; there are seven of them up to
+translation, conventionally named I, O, T, S, Z, J and L. Which rectangles can be
+tiled by copies of a single one?
+
+For the T-tetromino the answer is a classical theorem of
+Walkup~\cite{walkup1965}: a $w \times n$ rectangle admits a tiling by
+T-tetrominoes if and only if $4 \mid w$ and $4 \mid n$. Korn and
+Pak~\cite{kornpak2004} later analysed the structure of those tilings, and
+Reid~\cite{reid2005} placed questions of this kind in the general setting of
+Klarner systems.
+Rectangles that fail Walkup's condition cannot be tiled at all, so
+Hochberg~\cite{hochberg2015} asked how close one can get: the \emph{gap number} is
+the least number of monominoes that must be left uncovered. He proved lower bounds
+of a strikingly rigid kind --- width~5 forces at least one monomino every five
+columns, width~7 one every seven columns --- and showed the gap number of T is one
+of $5, 6, 7, 9$; Torres and Vallejo~\cite{torresvallejo2024} later brought the cap
+down to six.
+
+All of that is static. The tetrominoes are also the pieces of Tetris, and there the
+board is not a passive region: pieces fall under gravity, and a row that becomes
+completely full is deleted, with everything above it dropping by one. The natural
+question is what those deletions buy.
+
+\begin{definition}
+A \emph{perfect clear} at width $w$ is a play that begins with an empty board of
+width $w$ and, after finitely many placements and the deletions they trigger, ends
+with the board empty again.
+\end{definition}
+
+Our main result is that line clears dissolve the static obstruction for five of the
+seven pieces and for no others.
+
+\begin{center}
+\begin{tabular}{lll}
+\toprule
+piece & static & dynamic (this paper) \\
+\midrule
+I & $4 \mid w$, $4 \mid n$ needed for a full tiling & every width, $n = w/4$ or $w$ \\
+O & only even widths & every even width, $n = w/2$ \\
+T & Walkup: $4 \mid w$ and $4 \mid n$ & every width $w \geq 4$, $n = w$ \\
+J, L & & every width $w \geq 4$, $n = w/2$, $w$ or $2w$ \\
+S, Z & gap number conjectured unbounded~\cite{hochberg2015} & \textbf{never, at any width} \\
+\bottomrule
+\end{tabular}
+\end{center}
+
+The T row is where the two theories meet most sharply, and it is worth stating the
+mechanism now, because it is the shape of the whole paper. Our construction for T
+(Theorem~\ref{thm:T}) splits the board into column-disjoint \emph{units}. All but the
+last unit must fill their rows without triggering any clear --- that is, they must
+\emph{statically tile} a $x \times 4$ rectangle, so Walkup forces $4 \mid x$. Widths
+$5$, $6$ and $7$ therefore cannot be built this way at all. They are exactly the
+widths the final unit handles, and the final unit is the one allowed to use line
+clears. The dynamic rule covers precisely the residues the static theorem forbids.
+
+Two further remarks place this work. Hoogeboom and Kosters~\cite{hoogeboom2004}
+characterised which board configurations are reachable from empty when \emph{all
+seven} piece types are available; with the full set the only obstruction is a
+divisibility condition on the number of cells, so the question is interesting only
+when the supply of pieces is restricted. That is the case we treat. Separately,
+Tetris is hard: deciding how much of a given board can be cleared is
+NP-complete~\cite{demaine2003}, and this remains true for a single piece
+type~\cite{mithardness2026}; Baccherini and Merlini~\cite{baccherini2008} study the
+combinatorics of related games. Our question is different in kind --- not the complexity
+of clearing a given board, but which piece sets can empty an \emph{empty} board at
+all --- and it turns out to have a clean answer.
+
+\section{The model}
+\label{sec:model}
+
+We fix the rules precisely, because one of our results is that they matter less than
+one might expect.
+
+The board of width $w$ is a finite set $\board \subseteq \{0,\dots,w-1\} \times
+\mathbb{Z}_{\geq 0}$ of occupied cells; we write $(r,c)$ for the cell in row $r$ and
+column $c$, with row $0$ at the bottom. Play starts from $\board = \emptyset$. A move
+chooses a piece type from the available set $P$, chooses one of its rotations and a
+horizontal position, and places its four cells as a set $X$, subject to:
+
+\begin{itemize}
+\item[(L1)] $X \cap \board = \emptyset$ --- the four cells were empty;
+\item[(L2)] $X$ shifted down by one row is not a legal position --- the piece cannot
+  fall further;
+\item[(L3)] after the placement, every full row is deleted simultaneously, and each
+  surviving cell descends by the number of deleted rows below it.
+\end{itemize}
+
+Condition (L2) says a piece locks only when supported. It says nothing about how the
+piece reached its position. Real implementations differ here: hard drop (choose a
+column, fall straight down), soft drop with horizontal movement (allowing tucks), and
+rotation systems with wall kicks (allowing spins) permit successively more
+placements. Writing $\mathrm{HD} \subseteq \mathrm{SD} \subseteq \mathrm{SRS}$ for
+the three sets of reachable placements, our results are insensitive to the choice:
+
+\begin{itemize}
+\item every construction in this paper was found under hard drop only, so it remains
+  valid in the larger models;
+\item every impossibility proof uses only (L1), (L2), (L3) and the shape of the
+  pieces, never the path by which a piece arrived, so it holds in all three.
+\end{itemize}
+
+Finally, if a perfect clear uses $n$ pieces and deletes $R$ rows in total, then
+counting cells gives
+\begin{equation}
+4n = Rw,
+\label{eq:cells}
+\end{equation}
+since every cell that is ever placed is eventually deleted, and each deletion removes
+$w$ cells.
+
+\section{Two tools}
+
+The first tool does almost all of the work.
+
+\begin{lemma}[Column counting]
+\label{lem:count}
+In a perfect clear at width $w$ that deletes $R$ rows in total, every column receives
+exactly $R$ cells.
+\end{lemma}
+
+\begin{proof}
+A cell never changes column: placement fixes its column, and the descent in (L3) is
+vertical. A deletion removes one cell from each of the $w$ columns, since the deleted
+row is full. The board ends empty, so every cell placed in column $c$ is eventually
+deleted, and deletions remove cells from column $c$ one at a time, once per deleted
+row. Hence column $c$ receives exactly $R$ cells.
+\end{proof}
+
+Lemma~\ref{lem:count} is purely combinatorial: it uses (L3) and nothing else, so it is
+independent of the rotation system. Summing over columns recovers~\eqref{eq:cells}.
+
+To use it we record, for each piece type, its \emph{column profiles}: the tuple of
+cells contributed to consecutive columns, one tuple per rotation.
+
+\begin{center}
+\begin{tabular}{ll}
+\toprule
+piece & column profiles \\
+\midrule
+I & $(1,1,1,1)$, $(4)$ \\
+O & $(2,2)$ \\
+T & $(1,2,1)$, $(1,3)$, $(3,1)$ \\
+S, Z & $(1,2,1)$, $(2,2)$ \\
+J, L & $(2,1,1)$, $(1,1,2)$, $(1,3)$, $(3,1)$ \\
+\bottomrule
+\end{tabular}
+\end{center}
+
+If $x_c$ denotes the number of pieces placed with a given profile starting at column
+$c$, Lemma~\ref{lem:count} becomes a system of linear equations in the $x_c$, one per
+column, each with right-hand side $R$. We refer to it as the \emph{counting system}.
+Note that S and Z have the same profiles, as do J and L; counting alone can never
+distinguish them. The reason is structural.
+
+\begin{lemma}[Mirror]
+\label{lem:mirror}
+The board and the rules are symmetric under left--right reflection, which exchanges
+J with L and S with Z. Consequently J and L behave identically at every width and
+every piece count, as do S and Z.
+\end{lemma}
+
+\begin{proof}
+Reflecting every placement of a legal play gives a legal play: (L1) and (L2) are
+preserved because reflection is a bijection on cells respecting rows, and a row is
+full if and only if its reflection is. Reflection maps the rotations of J onto those
+of L and the rotations of S onto those of Z.
+\end{proof}
+
+\section{Single piece types}
+
+Throughout this section $P$ consists of one type.
+
+\subsection{S and Z}
+
+\begin{theorem}
+\label{thm:S}
+S alone admits no perfect clear, at any width. The same holds for Z alone.
+\end{theorem}
+
+\begin{proof}
+Let $h_c$ be the number of horizontal S pieces (profile $(1,2,1)$) whose leftmost
+column is $c$, and $v_c$ the number of vertical ones (profile $(2,2)$). The counting
+system reads
+\[
+h_c + 2h_{c-1} + h_{c-2} + 2v_c + 2v_{c-1} = R \qquad (0 \le c \le w-1),
+\]
+with the convention that a variable vanishes when its piece would leave the board.
+Column $0$ gives $h_0 + 2v_0 = R$ and column $1$ gives $h_1 + 2h_0 + 2v_1 + 2v_0 =
+R$; subtracting, $h_1 + h_0 + 2v_1 = 0$, so $h_0 = h_1 = v_1 = 0$ and $2v_0 = R$. The
+same subtraction at columns $c+2, c+3$ propagates this: by induction $h_c = 0$ for
+all $c$, $v_c = 0$ for odd $c$, and $v_c = R/2$ for even $c$.
+
+If $w$ is odd, then $w-1$ is even, so $v_{w-1} = R/2$; but a vertical piece starting
+at column $w-1$ would occupy column $w$, so $v_{w-1} = 0$ and $R = 0$. There is no
+nonempty play.
+
+If $w$ is even the counting system is consistent, and we need the geometry. Every
+piece is a vertical S starting at an even column, so the columns split into
+independent blocks $\{2k, 2k+1\}$, no piece straddling two blocks. A vertical S
+occupies relative rows $\{1,2\}$ in its left column and $\{0,1\}$ in its right one:
+only the \emph{right} column reaches relative row $0$. Since every piece starts at an
+even column, every cell in an even column sits at relative row at least $1$ above the
+piece's base, and the base is at absolute row $\geq 0$; so no placement ever fills
+cell $(0,0)$.
+
+Nor can a cell descend into it. A cell reaches row $0$ only if all the rows below its
+current position are deleted, which requires row $0$ itself to be deleted, which
+requires $(0,0)$ to be occupied. The two statements --- ``$(0,0)$ is never filled''
+and ``row $0$ is never deleted'' --- therefore support each other, and a simultaneous
+induction on the moves establishes both.
+
+The first piece placed in the block $\{0,1\}$ rests on the floor, since nothing else
+can occupy those columns, and so leaves a cell in row $0$. Row $0$ is never deleted,
+and a cell leaves the board only when its row is deleted; that cell is permanent, and
+the board never empties. The statement for Z follows from Lemma~\ref{lem:mirror}.
+\end{proof}
+
+\subsection{O and I}
+
+\begin{theorem}
+\label{thm:O}
+O alone admits a perfect clear exactly at even widths, with $n = w/2$ pieces and
+$R = 2$.
+\end{theorem}
+
+\begin{proof}
+With $o_c$ the number of O pieces starting at column $c$, the counting system is
+$2o_c + 2o_{c-1} = R$. Column $0$ gives $2o_0 = R$, column $1$ gives $2o_1 = 0$, and
+inductively $o_c = R/2$ for even $c$ and $0$ for odd $c$. If $w$ is odd then
+$o_{w-1} = 0$ because the piece would leave the board and $o_{w-2} = 0$ because
+$w-2$ is odd, so column $w-1$ gives $R = 0$. If $w$ is even, place $w/2$ pieces side
+by side: rows $0$ and $1$ fill and are deleted. That $R = 2$ cannot be improved is
+part of Theorem~\ref{thm:lower}.
+\end{proof}
+
+\begin{theorem}
+\label{thm:I}
+I alone admits a perfect clear at every width $w$, with $n = w/4$ pieces and $R=1$
+when $4 \mid w$, and $n = w$ pieces and $R = 4$ otherwise.
+\end{theorem}
+
+\begin{proof}
+For the construction, place one vertical I in each column: rows $0$ to $3$ fill and
+are deleted, using $n = w$ pieces. If $4 \mid w$, lay $w/4$ horizontal I pieces along
+row $0$ instead, deleting one row. The minimality of $R$ in each case follows from
+Theorem~\ref{thm:lower} below.
+\end{proof}
+
+\subsection{T}
+
+This is the case where the static theory reappears, so we give it in full.
+
+\begin{theorem}
+\label{thm:T}
+T alone admits a perfect clear at every width $w \geq 4$, and the minimum number of
+pieces is exactly $n = w$, with $R = 4$.
+\end{theorem}
+
+\begin{proof}[Proof of the lower bound]
+By~\eqref{eq:cells} it suffices to show $R \geq 4$. Let $h_c, p_c, q_c$ count the
+pieces with profile $(1,2,1)$, $(1,3)$ and $(3,1)$ respectively starting at column
+$c$. The counting system is
+\[
+N_j := h_j + 2h_{j-1} + h_{j-2} + p_j + 3p_{j-1} + 3q_j + q_{j-1} = R .
+\]
+We use only $j = 0, 1, 2$, which exist as soon as $w \geq 3$.
+
+If $R = 1$, then $N_0 = 1$ forces $(h_0,p_0,q_0) = (1,0,0)$ or $(0,1,0)$; the first
+gives $N_1 \geq 2h_0 = 2$ and the second $N_1 \geq 3p_0 = 3$, both exceeding $1$.
+
+If $R = 2$, then $3q_0 \leq 2$ forces $q_0 = 0$ and $(h_0,p_0) \in
+\{(2,0),(1,1),(0,2)\}$; then $N_1 \geq 2h_0 + 3p_0$ equals $4$, $5$ or $6$, all
+exceeding $2$.
+
+If $R = 3$, the solutions of $N_0 = 3$ are $(3,0,0)$, $(2,1,0)$, $(1,2,0)$,
+$(0,3,0)$ and $(0,0,1)$. For the first four, $N_1 \geq 2h_0 + 3p_0 \geq 6$. The
+remaining case has $q_0 = 1$ and $h_0 = p_0 = 0$, whence $N_1 = h_1 + p_1 + 3q_1 + 1
+= 3$, so $q_1 = 0$ and $(h_1,p_1) \in \{(2,0),(1,1),(0,2)\}$; but then $N_2 \geq
+2h_1 + 3p_1 \geq 4 > 3$.
+
+So $R \geq 4$ and $n = Rw/4 \geq w$.
+\end{proof}
+
+\begin{proof}[Proof of the construction]
+Write the four rotations of T as
+\[
+\mathsf{U} = \{(0,0),(0,1),(0,2),(1,1)\},\quad
+\mathsf{D} = \{(0,1),(1,0),(1,1),(1,2)\},
+\]
+\[
+\mathsf{L} = \{(0,1),(1,0),(1,1),(2,1)\},\quad
+\mathsf{R} = \{(0,0),(1,0),(1,1),(2,0)\},
+\]
+with cells given as (row, column) offsets from the landing position, and write
+$\mathsf{X}@c$ for a placement of $\mathsf{X}$ whose leftmost column is $c$.
+
+We decompose the board into units occupying disjoint intervals of columns. Because a
+piece never leaves its unit's columns, the landing row of each placement, and whether
+a row of that unit is full, depend only on that unit's own contents. Two kinds of
+unit are needed, with $R = 4$ throughout:
+
+\smallskip
+\noindent\emph{The stacking unit} $S$, of width $4$, is
+$\mathsf{U}@0,\ \mathsf{L}@2,\ \mathsf{R}@0,\ \mathsf{D}@1$. With clears switched
+off it fills rows $0$ to $3$ of its four columns exactly, using $4$ pieces.
+
+\smallskip
+\noindent\emph{The final units} $E_m$, of width $m \in \{4,5,6,7\}$ and $m$ pieces:
+\[
+\begin{array}{ll}
+E_4: & \mathsf{U}@0\ \ \mathsf{L}@2\ \ \mathsf{R}@0\ \ \mathsf{D}@1 \\
+E_5: & \mathsf{U}@0\ \ \mathsf{D}@2\ \ \mathsf{R}@0\ \ \mathsf{L}@3\ \ \mathsf{D}@1 \\
+E_6: & \mathsf{U}@1\ \ \mathsf{L}@4\ \ \mathsf{D}@2\ \ \mathsf{R}@0\ \ \mathsf{D}@0\ \ \mathsf{D}@3 \\
+E_7: & \mathsf{U}@0\ \ \mathsf{U}@3\ \ \mathsf{D}@2\ \ \mathsf{L}@5\ \ \mathsf{D}@4\ \ \mathsf{R}@0\ \ \mathsf{D}@1
+\end{array}
+\]
+With clears switched on, each empties its own columns after deleting four rows.
+
+Now write $w = 4a + m$ with $m \in \{4,5,6,7\}$ and $a \geq 0$; this is possible for
+every $w \geq 4$, taking $m \equiv w \pmod 4$ in the stated range. Play $a$ copies of
+$S$ in the columns $[0,4a)$, then $E_m$ in the columns $[4a,w)$.
+
+While the copies of $S$ are played, the columns of $E_m$ are empty, so no row of the
+board is full and no deletion occurs; each copy of $S$ therefore fills rows $0$ to
+$3$ of its own columns, as required. When $E_m$ begins, every column outside it is
+full in rows $0$ to $3$, so a row of the board is full exactly when $E_m$ fills that
+row within its own columns. Hence $E_m$ evolves exactly as it would on a board of
+width $m$ on its own, deleting four rows; those deletions remove the rows of the
+copies of $S$ as well, and the board is empty. The piece count is $4a + m = w$,
+matching the lower bound.
+\end{proof}
+
+\begin{remark}[Where Walkup reappears]
+\label{rem:walkup}
+The requirement on a stacking unit --- fill rows $0$ to $3$ of $x$ columns with no
+deletion --- says exactly that the $x \times 4$ rectangle admits a static tiling by
+T-tetrominoes. By Walkup's theorem this forces $4 \mid x$. So widths $5$, $6$ and $7$
+admit no stacking unit at all, and those are precisely the widths carried by the
+final unit, the one permitted to use line clears. The dynamic rule covers exactly the
+residues the static theorem forbids.
+
+Walkup's theorem does not, however, settle whether the $4 \times 4$ tiling can be
+\emph{reached} under gravity: support is not a concern of static tiling, and a tiling
+in which some piece must be inserted beneath another would be unusable here. That it
+can be reached --- by the four placements listed above --- is the one genuinely
+dynamic ingredient of the construction.
+\end{remark}
+
+\subsection{J and L}
+
+\begin{theorem}
+\label{thm:JL}
+J alone admits a perfect clear at every width $w \geq 4$, with minimum piece count
+\[
+n = \begin{cases}
+w/2 & (w \equiv 0 \bmod 4), \quad R = 2,\\
+w & (w \equiv 2 \bmod 4), \quad R = 4,\\
+2w & (w \text{ odd}), \quad R = 8 .
+\end{cases}
+\]
+The same holds for L.
+\end{theorem}
+
+\begin{proof}[Sketch]
+The construction is again a unit decomposition, with
+$\mathsf{A} = (2,1,1)$, $\mathsf{B} = (1,1,2)$, $\mathsf{P} = (1,3)$ and
+$\mathsf{Q} = (3,1)$ denoting the rotations of J by their profiles. The units are
+\[
+\begin{array}{llll}
+\mathsf{AB} & \text{width } 4, & R = 2, & \mathsf{A}@0,\ \mathsf{B}@1 \\
+\mathsf{PQ} & \text{width } 2, & R = 4, & \mathsf{P}@0,\ \mathsf{Q}@0 \\
+\mathsf{PQPQ} & \text{width } 2, & R = 8, & (\mathsf{P}@0,\ \mathsf{Q}@0) \text{ twice} \\
+\mathsf{U}_5 & \text{width } 5, & R = 8, & \mathsf{A}@0\ \mathsf{P}@1\ \mathsf{P}@0\ \mathsf{P}@3\ \mathsf{Q}@0\ \mathsf{Q}@3\ \mathsf{A}@2\ \mathsf{A}@0\ \mathsf{P}@3\ \mathsf{B}@1
+\end{array}
+\]
+and the board is built as $\mathsf{AB}^{w/4}$ when $4 \mid w$, as
+$\mathsf{PQ}^{w/2}$ when $w \equiv 2 \pmod 4$, and as $\mathsf{U}_5$ followed by
+$(w-5)/2$ copies of $\mathsf{PQPQ}$ when $w$ is odd. The verification is the same two
+steps as in Theorem~\ref{thm:T} and is a finite check on four units, independent of
+$w$. Minimality follows from Theorem~\ref{thm:lower}. L follows by
+Lemma~\ref{lem:mirror}.
+\end{proof}
+
+\section{Lower bounds at every width}
+\label{sec:lower}
+
+The minimality claims above assert, for each piece and each width, that the counting
+system has no solution for smaller $R$. For a fixed width this is a finite check. The
+following observation upgrades it to all widths at once.
+
+\begin{theorem}
+\label{thm:lower}
+For each piece type and each $R$, the set of widths at which the counting system is
+solvable is eventually periodic in $w$, and the period can be computed. The resulting
+minimum values of $R$ are
+\begin{center}
+\begin{tabular}{ll}
+\toprule
+piece & minimum $R$ \\
+\midrule
+I & $1$ if $4 \mid w$, else $4$ \\
+O & $2$ if $w$ even; no solution if $w$ odd \\
+T & $4$ at every width \\
+S, Z & $2$ if $w$ even; no solution if $w$ odd \\
+J, L & $2$ if $4 \mid w$; $4$ if $w \equiv 2 \bmod 4$; $8$ if $w$ odd \\
+\bottomrule
+\end{tabular}
+\end{center}
+\end{theorem}
+
+\begin{proof}
+Sweep the columns from left to right, maintaining as state the vector of
+contributions already committed to the columns not yet processed. A profile spans at
+most four columns, so the state has at most three components, each an integer in
+$[0,R]$ --- any larger value can never be reduced and is dead. The state space is
+therefore finite. Processing one column is a fixed relation on states, so it induces
+a deterministic map on \emph{sets} of states; iterating it from the initial set
+$\{(0,\dots,0)\}$ gives a sequence of subsets of a finite set, which must eventually
+cycle.
+
+The rightmost few columns are special --- a profile may no longer fit --- but the
+sequence of restricted maps applied there depends only on how many columns remain,
+not on $w$. Hence solvability at width $w$ is obtained by applying a fixed tail map
+to the $(w - k)$-th term of an eventually periodic sequence, where $k \leq 3$ is the
+number of special columns, and is therefore eventually periodic in $w$. Computing the
+pre-period and period gives the table. \qedhere
+\end{proof}
+
+The entries for S and Z deserve emphasis, because they explain the shape of
+Theorem~\ref{thm:S}.
+
+\begin{corollary}
+\label{cor:geometry}
+At every even width, S alone passes the counting test with $R = 2$. Consequently no
+argument based on Lemma~\ref{lem:count} alone can rule out S, and the geometric step
+in the proof of Theorem~\ref{thm:S} is unavoidable.
+\end{corollary}
+
+Among all seven pieces, this is the only place where counting and geometry part
+company: for I, O, T, J and L the counting bound is achieved by an explicit
+construction, and for S and Z at odd widths counting already gives a contradiction.
+The single gap is S and Z at even widths, and it is exactly the gap
+Theorem~\ref{thm:S} fills.
+
+\section{Sets of pieces}
+
+Suppose now that a set $P$ of types is available, and the player may use any of them
+in any order.
+
+\begin{theorem}
+\label{thm:SZ}
+$\{S,Z\}$ together admits no perfect clear, at any width.
+\end{theorem}
+
+\begin{proof}[Sketch]
+S and Z have the same column profiles, so the counting argument of
+Theorem~\ref{thm:S} applies verbatim to their total counts: no horizontal piece is
+used, every piece is vertical and starts at an even column, and odd widths are
+excluded outright. At even widths the columns again split into independent blocks
+$\{2k,2k+1\}$, and the width-$w$ problem reduces to a width-independent question
+about one block.
+
+Let $F_0, F_1$ be the sets of filled rows in the two columns of a block and put
+$d_j = |F_0 \cap [0,j]| - |F_1 \cap [0,j]|$. Placing a vertical Z at height $r$
+increments $d_r$ and $d_{r+1}$; placing a vertical S decrements them; deleting row
+$m$ removes $d_m$ from the sequence and changes no other value. One then checks four
+invariants of the reachable states: $|F_0| = |F_1|$; the occupied rows form an
+initial segment; $|d_j| \leq 1$ for all $j$; and $d_0 \neq 0$ whenever the block is
+nonempty. The last one says row $0$ of the block is never full, so it is never
+deleted, and the cell the first piece leaves in row $0$ is permanent.
+\end{proof}
+
+\begin{theorem}
+\label{thm:sets}
+Let $w \geq 4$. A set $P$ of tetromino types admits a perfect clear at width $w$ if
+and only if $P$ meets $\{I, T, J, L\}$, or $w$ is even and $O \in P$.
+\end{theorem}
+
+\begin{proof}
+If $P$ contains one of I, T, J, L, use that type alone
+(Theorems~\ref{thm:I},~\ref{thm:T},~\ref{thm:JL}); each of those constructions is
+available at every $w \geq 4$. Otherwise $P \subseteq \{O,S,Z\}$, and the profiles of
+all three lie in $\{(1,2,1),(2,2)\}$, so the counting derivation in the proof of
+Theorem~\ref{thm:S} applies to their total counts without change: horizontal pieces
+are unused, every piece starts at an even column, and at odd widths $R = 0$. At even
+widths, if $O \in P$ then $w/2$ copies of O clear two rows; if not, then $P \subseteq
+\{S,Z\}$ and Theorems~\ref{thm:S} and~\ref{thm:SZ} apply.
+\end{proof}
+
+\begin{remark}[Widths below four]
+The hypothesis $w \geq 4$ is needed, and T is the reason. I clears every width from
+$1$ upwards and J and L clear widths $2$ and $3$, so those constructions lose nothing;
+but T alone clears neither width $2$ nor width $3$, although the counting system
+permits $R = 4$ at both. (Width $1$ admits no T placement at all, since every rotation
+of T spans at least two columns.) The classification at $w \leq 3$ would therefore
+need $T$ removed from the list, and we have not determined which mixed sets containing
+T succeed there.
+\end{remark}
+
+\begin{remark}
+It is tempting to argue that since $\{S,Z\}$ is the only unusable pair, every set of
+three or more types must work. That is false: $\{O,S,Z\}$ has three types and fails
+at every odd width. The reason is that O carries a width restriction of its own, so
+``only one bad pair'' says nothing about sets built from the three restricted types.
+\end{remark}
+
+\section{Restricted supply: the seven-bag randomiser}
+\label{sec:sevenbag}
+
+Modern Tetris does not let the player choose the next piece. Pieces arrive in
+\emph{bags}: each block of seven consecutive pieces is a permutation of the seven
+types. A single slot of \emph{hold} lets the player set one arriving piece aside.
+
+This changes the question, because every construction above repeats one type.
+
+\begin{theorem}
+\label{thm:bag}
+Under the seven-bag constraint, with the order inside each bag at the player's
+choice, the minimum number of pieces in a perfect clear is
+\begin{center}
+\begin{tabular}{lrrrrrrrrrrr}
+\toprule
+$w$ & 4 & 5 & 6 & 7 & 8 & 9 & 10 & 11 & 12 & 13 & 14 \\
+\midrule
+unrestricted & 1 & 5 & 3 & 7 & 2 & 9 & 5 & 11 & 3 & 13 & 7 \\
+seven-bag & 1 & 5 & 3 & 7 & 4 & 9 & 10 & 11 & 9 & 13 & 14 \\
+\bottomrule
+\end{tabular}
+\end{center}
+\end{theorem}
+
+The pattern is that the constraint is free at odd widths and costly at even ones. At
+an odd width the unrestricted minimum already has $R = 4$, and four rows give room to
+place seven different types; at an even width the unrestricted optimum is one or two
+rows, and a thin region cannot absorb variety. A single row admits only horizontal I
+pieces, so $w/4 \geq 2$ is immediately fatal; two rows survive to $w = 8$ and fail
+from $w = 10$.
+
+Width $16$ continues the pattern and is the most expensive case we have settled: the
+unrestricted minimum is $4$, and the seven-bag minimum is $12$. Both $n = 4$ and
+$n = 8$ are impossible --- every admissible multiset was decided --- while $n = 12$
+admits five, among them one copy each of I and L with two of every other type.
+
+\smallskip
+The harder question is what the \emph{order} inside the bags costs, and here we can
+report less. Fix $w = 10$ and $n = 10$, the setting of the standard opener. Ten
+placements consume at most eleven arrivals, so only the first four pieces of the
+second bag matter, giving $P(7,4) = 840$ prefixes to consider for each of the
+$7! = 5040$ orders of the first bag.
+
+A sample of $100$ first bags, all $840$ prefixes each, gave nine failures in three
+bags --- a rate of $1.1 \times 10^{-4}$ over the sample --- and a fourth bag,
+$\mathrm{TJLISZO}$, had been settled earlier with four. Those thirteen were all we had
+when the structural results below were found; the exhaustive sweep has since
+superseded them, and we quote it instead.
+
+Two structural facts cut the work. The first is that the hold slot is empty only on an
+initial segment of the play: a move either places the arrival and leaves the hold
+alone, or places the held piece and puts the arrival in its place, or --- only from an
+empty hold --- stashes the arrival without placing anything. The last two leave the
+hold occupied, so a play stashes at most once.
+
+Write $\mathrm{HG}_m(h; s_1 s_2 \ldots)$ for the set of length-$m$ sequences the player
+can place starting from hold $h$ with $s_1, s_2, \ldots$ arriving, each step placing
+either the held piece (the arrival replacing it) or the arrival (the hold unchanged).
+
+\begin{theorem}
+\label{thm:swap}
+If the arrival sequence $q_0 q_1 \ldots q_{L-1}$ has $L \geq n+1$, then the set of
+placement sequences of length $n$ the player can achieve is
+\[
+q_1 \cdot \mathrm{HG}_{n-1}(q_0; q_2 q_3 \ldots) \;\cup\; q_0 \cdot \mathrm{HG}_{n-1}(q_1; q_2 q_3 \ldots),
+\]
+which is symmetric in $q_0$ and $q_1$. Exchanging the first two arrivals therefore
+changes neither the achievable placement sequences nor whether a perfect clear exists.
+\end{theorem}
+
+\begin{proof}
+The two terms are the two continuations after stashing $q_0$ immediately, so they are
+achievable. For the converse, note that inside $\mathrm{HG}$ the move ``place the held
+piece, keep the arrival'' repeated from hold $q_1$ emits $q_1, q_2, q_3, \ldots$ in
+order. Since a play stashes at most once, it either never stashes, giving
+$q_0 q_1 \ldots q_{n-1}$, which is $q_0$ followed by $n-1$ such repetitions and needs
+the arrival $q_n$ --- the one place where $L \geq n+1$ is used --- or stashes once, at
+$q_k$ say, giving $q_0 \ldots q_{k-1}$ followed by $\mathrm{HG}_{n-k}(q_k; q_{k+1}
+\ldots)$; for $k = 0$ this is the displayed union, for $k = 1$ its second term, and for
+$k \geq 2$ it is reached inside that second term by $k-1$ repetitions before branching
+freely.
+\end{proof}
+
+So the $5040$ first bags fall into $2520$ classes of two, and a bad first bag always has
+a bad partner. The hypothesis is not decorative: with $L = n$ no stash is possible and
+the play is forced, and among sequences of four pieces at width $4$ there are $66$ pairs
+differing only in their first two entries where one clears and the other does not.
+
+The mirror of Lemma~\ref{lem:mirror} acts here too: reflecting a play reflects both
+bags at once and permutes the $840$ prefixes among themselves, so a first bag and its
+mirror agree prefix by prefix. Reflection commutes with the exchange, and neither
+fixes any first bag --- the exchange because the first two pieces of a bag are
+distinct, the mirror because J and L each occur once --- so together they cut the
+$5040$ orders to $1260$ classes of four, which is the form in which the exhaustive
+computation is worth attempting.
+
+The description of plays can be sharpened, and the sharper form says how far
+Theorem~\ref{thm:swap} extends. Stash the first arrival at once --- by the theorem
+this costs nothing --- and call it $a_0$, with $a_1 a_2 \ldots a_m$ arriving after.
+Exactly one arrived piece is pending at any time, so a play is precisely a choice of
+the steps $j_1 < \cdots < j_r$ at which the held piece is placed: step $j_k$ receives
+$a_{j_{k-1}}$ (with $j_0 = 0$), every other step receives its own arrival, and
+$a_{j_r}$ is left in the hold. One piece at a time may be deferred, and releasing it
+defers whatever stood in its place. In this form Theorem~\ref{thm:swap} is the
+bijection $C \leftrightarrow C \bigtriangleup \{1\}$ between chains.
+
+That bijection is special to the front.
+
+\begin{proposition}
+\label{prop:adjacent}
+Exchanging two adjacent arrivals $q_i, q_{i+1}$ with $i \geq 1$ does not in general
+preserve the achievable placement sequences, nor even the existence of a perfect clear.
+\end{proposition}
+
+\begin{proof}
+Let $B$ be the board reached before the two steps, $x$ the held piece and $a, b$ the
+two arrivals. Two steps later the reachable states are $(Ba, x)$ and $(Bx, a)$ with
+$b$ pending, which the exchange fixes, together with $(Bab, x)$, which it sends to
+$(Bba, x)$; and placing $a$ before $b$ reaches boards that placing $b$ before $a$ does
+not. At the front there is no held piece $x$, which is why the branches coincide there
+and nowhere else. For the verdict, at $w = 10$ and $n = 10$ the first bag
+$\mathrm{JTLIOSZ}$ with prefix $\mathrm{LOZS}$ admits no perfect clear while
+$\mathrm{JLTIOSZ}$, its exchange of the second and third arrivals, does.
+\end{proof}
+
+The counterexamples are scarce: over the $250{,}316$ decided pairs available to us the
+exchange preserved the verdict $250{,}293$ times and failed $23$. A rule that holds in
+$99.99\%$ of a quarter of a million cases is still not a theorem. Equality of search
+cost is no evidence either, and fails in both directions: exchanging $q_0$ and $q_1$
+agreed on the state count to the digit across $1{,}684$ solvable cases but differed on
+the first failing pair ($38{,}542{,}538$ against $38{,}537{,}388$), while the exchange
+of Proposition~\ref{prop:adjacent}, which need not preserve the verdict, often
+preserves the count exactly --- two of its four branches coincide.
+
+One caution about the computation changed an answer for us. A first pass with a state
+cap of $8 \times 10^6$ reported \emph{no} failures at all: each was sitting in a case
+that hit the cap, undecided. A capped search is not a negative result.
+
+\subsection*{What the exhaustive computation shows so far}
+
+The sweep over the $1260$ classes is running. We report the parts of it that are
+complete, together with counts of the failures found so far; the latter are as of the
+$305$ classes settled at the time of writing and can only grow. Say that a first bag
+is \emph{late} if $S$ and $Z$ both arrive in position five or later. Exactly $180$ of the $1260$ classes are late, and all of them are now
+settled over all $840$ prefixes, with nothing left undecided: of those $151{,}200$
+cases, $92$ admit no perfect clear, and they fall in $31$ of the $180$ classes.
+Arranged by the position of the I piece, the failing classes are
+
+\begin{center}
+\begin{tabular}{lrrrrrr}
+\toprule
+position of I & 1 & 3 & 4 & 5 & 6 & 7 \\
+\midrule
+late classes & 72 & 36 & 36 & 12 & 12 & 12 \\
+of which fail & 0 & 4 & 12 & 12 & 2 & 1 \\
+\bottomrule
+\end{tabular}
+\end{center}
+
+There is no column for position $2$: by Theorem~\ref{thm:swap} the first two arrivals
+are interchangeable, so no class has its I there. Every late class with the I first
+succeeds, every late class with the I fifth fails, and the difficulty falls away again
+at positions six and seven. The effect is therefore not monotone in the position of
+the I, and the naive reading of the table --- that moving the I earlier cannot hurt ---
+is false. Moving it from sixth to fifth turns a possible position into an impossible
+one in $68$ of the $72$ matched pairs, and in none of the $72$ does the earlier I help.
+
+One family is completely decided and is the sharpest impossibility we have.
+
+\begin{theorem}[computer-verified]
+\label{thm:family}
+Let the first bag consist of $T, J, L, O$ in any of the $24$ orders, followed by
+$I, S, Z$, and let the second-bag prefix be one of $\mathrm{JOZS}$, $\mathrm{JZOS}$,
+$\mathrm{OJZS}$. Then no perfect clear exists, in all $72$ cases. Mirroring gives the
+same statement for the tail $I, Z, S$ with the prefixes $\mathrm{LOSZ}$,
+$\mathrm{LSOZ}$, $\mathrm{OLSZ}$.
+\end{theorem}
+
+At the other end, no first bag with the I first has been made to fail: the $72$ late
+classes of that kind are settled over all $840$ prefixes, and the other $288$ were
+tested against the six prefixes that have produced failures, all $1728$ cases possible
+and none undecided. The most expensive settled in $7.9 \times 10^6$ states, an order
+of magnitude below the $3.7$--$5.6 \times 10^7$ the known failures demand. This is a
+probe, not a proof: six of $840$ prefixes is under one percent.
+
+A proof of Theorem~\ref{thm:family} by counting is not merely missing but impossible,
+and the obstruction disqualifies every tool in this paper.
+
+\begin{proposition}
+\label{prop:nostatic}
+Whether a perfect clear exists is not a function of the multiset of arriving pieces.
+Consequently no invariant computed from the multiset of placed pieces --- column
+counting as in Lemma~\ref{lem:count}, the parity identity of
+Appendix~\ref{app:parity}, or a Walkup-style argument --- can decide the question.
+\end{proposition}
+
+\begin{proof}
+At $w = 10$, $n = 10$, the arrival sequences $\mathrm{TJILSZO}\,\mathrm{OJZS}$ and
+$\mathrm{TJLISZO}\,\mathrm{OJZS}$ differ by one transposition of adjacent letters and
+so present the same eleven pieces, hence the same candidate multisets of ten placed
+pieces. The first admits a perfect clear and the second does not.
+\end{proof}
+
+Nor does the position of the I determine the verdict on its own, once one leaves the
+family of Theorem~\ref{thm:family}: $\mathrm{JTLIOSZ}$ fails on $\mathrm{LOZS}$ while
+$\mathrm{JLTIOSZ}$ succeeds on it, and both have their I fourth.
+
+Of the regularities we proposed for the failing prefixes, one survives: across all
+$94$ failures known to us the prefix is a permutation of $\{O,S,Z\}$ together with one
+of $J$ or $L$, without exception, which is the shape the mirror lemma forces. Three
+others broke, each having held for every case then available --- that the prefixes end
+in $\mathrm{ZS}$, that they end in $S$ or $Z$ (the endings now stand at $S$ fifty-nine
+times, $Z$ thirty and $O$ five), and that they take only three shapes.
+
+The most instructive was the lateness condition. Every failing first bag then known
+was late; of a hundred sampled bags, fifteen were late and only three of those failed;
+and a prediction recorded before the last undecided cases were settled --- that they
+would succeed, none being late --- came out right. It survived until the $180$ late
+classes were done and the sweep moved on, where $\mathrm{JTZOLSI}\,\mathrm{OJZS}$ and
+$\mathrm{OSTLJZI}\,\mathrm{OJSZ}$ fail with $Z$ third and $S$ second. The prediction
+had in fact tested something else: all four of those cases had the I first, which the
+table above shows to be the easy end. A confirmed prediction need not confirm the
+reason it was made for.
+
+The mechanism one would guess for lateness remains natural --- a vertical I is the main
+way to resolve an S/Z staircase inside four rows, and an I arriving after the staircase
+is built cannot undo it, the direction Burgiel's theorem~\cite{burgiel1997} points in;
+see also~\cite{brzustowski1992}. The computation says the guess does not survive
+contact with the position of the I.
+
+We claim no novelty for this section. The community's own perfect-clear solvers work
+in a more general model --- ours is hard-drop only, so an impossibility here is an
+impossibility \emph{in our model}, and spins or tucks might rescue some of these
+cases. The point is the shape of the answer: perfect clears are almost always
+available, failures are rare and structured, and the well-known openers exist to save
+search and memorisation rather than to reach positions that are otherwise
+unreachable.
+
+\appendix
+
+\section{A parity identity}
+\label{app:parity}
+
+The following is folklore among competitive players, where it is used to decide
+whether a perfect clear is still reachable; see the Hard Drop wiki~\cite{harddropparity}.
+We record it because it has a short proof, generalises to every width, and explains
+a natural false conjecture.
+
+Colour the board like a chessboard and set
+\[
+\varphi(\board) = \sum_{(r,c) \in \board} (-1)^{r+c}.
+\]
+Every tetromino except T covers two cells of each colour, so placing it leaves
+$\varphi$ unchanged; a T covers three of one colour and one of the other, changing
+$\varphi$ by $\pm 2$, hence by $2 \bmod 4$.
+
+Consider a deletion event removing full rows $j_1 < \dots < j_k$. For a surviving
+cell at row $r$, let $s(r)$ be the number of deleted rows below it; the cell descends
+by $s(r)$, multiplying its contribution by $(-1)^{s(r)}$. Put
+\[
+D = \#\{\text{surviving cells with } s(r) \text{ odd}\},
+\qquad
+A = \sum_{i=1}^{k} \varphi(\text{row } j_i),
+\]
+noting that $\varphi$ of a full row is $0$ when $w$ is even and $(-1)^{j}$ when $w$
+is odd. Then
+\[
+\Delta\varphi = -2\!\!\sum_{s(r) \text{ odd}}\!\!(-1)^{r+c} \; - \; A
+\equiv -2D - A \pmod 4,
+\]
+since modulo $4$ the first sum depends only on the parity of the number of cells
+involved. Summing over a whole perfect clear, where $\varphi$ starts and ends at $0$,
+gives $2\,\#\mathrm{T} \equiv 2\sum D + \sum A \pmod 4$, that is
+\[
+\#\mathrm{T} \;\equiv\; \sum_{\text{events}} D \;+\; \tfrac{1}{2}\sum_{\text{events}} A
+\pmod 2 .
+\]
+For even $w$ the correction $A$ vanishes and the identity reads: \emph{the parity of
+the number of T pieces equals the parity of the total number of cells left above the
+deleted rows}. In particular a perfect clear with no deletions at all uses an even
+number of T pieces --- which is the false conjecture one arrives at by forgetting
+that rows disappear.
+
+\begin{remark}
+$D$ must be counted per deleted row, or equivalently as the number of cells with an
+odd number of deleted rows below them. Reading it as ``the cells above the deleted
+rows'' is correct only for single-row deletions.
+\end{remark}
+
+\section*{Computations}
+
+All constructions and all counting claims in this paper are reproducible from the
+accompanying repository, which contains for each numerical statement the command that
+produces it. The identity of Appendix~\ref{app:parity} was checked against all
+$4{,}758{,}805$ perfect clears at widths $4$, $5$, $6$, $7$ and $8$, by two independent
+implementations agreeing on the number of plays in every case.
+
+\begin{thebibliography}{99}
+\bibitem{walkup1965} D.~W. Walkup, Covering a rectangle with T-tetrominoes,
+  \emph{Amer. Math. Monthly} \textbf{72} (1965) 986--988.
+\bibitem{hochberg2015} R.~Hochberg, The gap number of the T-tetromino,
+  \emph{Discrete Math.} \textbf{338} (2015) 130--138.
+\bibitem{kornpak2004} M.~Korn and I.~Pak, Tilings of rectangles with T-tetrominoes,
+  \emph{Theoret. Comput. Sci.} \textbf{319} (2004) 3--27.
+% TODO before submission: given names not yet confirmed (surnames only below).
+\bibitem{torresvallejo2024} Torres and Vallejo, Fragments that reduce the gap cap of
+  the T-tetromino to six, \emph{Sci. Eng. J.} \textbf{17} (2024) 128--133.
+\bibitem{reid2005} M.~Reid, Klarner systems and tiling boxes with polyominoes,
+  \emph{J. Combin. Theory Ser. A} \textbf{111} (2005) 89--105.
+\bibitem{burgiel1997} H.~Burgiel, How to lose at Tetris, \emph{Math. Gaz.}
+  \textbf{81} (1997) 194--200.
+\bibitem{brzustowski1992} J.~Brzustowski, \emph{Can you win at Tetris?},
+  MSc thesis, University of British Columbia, 1992.
+% TODO before submission: page range unconfirmed, 97--105 or 94--102 depending on source.
+\bibitem{hoogeboom2004} H.~J. Hoogeboom and W.~A. Kosters, How to construct Tetris
+  configurations, \emph{Int. J. Intell. Games Simul.} \textbf{3} (2004) 97--105.
+\bibitem{demaine2003} E.~D. Demaine, S.~Hohenberger and D.~Liben-Nowell, Tetris is
+  hard, even to approximate, in \emph{COCOON 2003}, 351--363.
+\bibitem{mithardness2026} MIT Hardness Group, Tetris is hard with just one piece
+  type, in \emph{FUN 2026}, LIPIcs \textbf{366}, 32:1--32:16.
+\bibitem{baccherini2008} D.~Baccherini and D.~Merlini, Combinatorial analysis of
+  Tetris-like games, \emph{Discrete Math.} \textbf{308} (2008) 4165--4176.
+\bibitem{harddropparity} Parity, Hard Drop Tetris Wiki.
+\end{thebibliography}
+
+\end{document}

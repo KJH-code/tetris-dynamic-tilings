@@ -1,0 +1,43 @@
+# 7-bag 최소 조각 수 재현. 폭 4..14.
+# 명령: TIMEOUT=900 NMAX=30 python3 src/py/bagmin.py 4 5 6 7 8 9 10 11 12 13 14   (2026-09-15)
+# w=13 의 n=13 에서 multiset 하나가 900 초 상한에 걸렸으나(1 undecided),
+# 같은 n 에서 6 개가 가능이므로 최소값 13 은 확정이다.
+w=4  unconstrained=1
+    n=1     1/7   multisets possible, 0 undecided
+w=4   unconstrained=1   sevenbag=1   witness counts=1000000
+w=5  unconstrained=5
+    n=5    16/21  multisets possible, 0 undecided
+w=5   unconstrained=5   sevenbag=5   witness counts=1111010
+w=6  unconstrained=3
+    n=3     1/35  multisets possible, 0 undecided
+w=6   unconstrained=3   sevenbag=3   witness counts=1000011
+w=7  unconstrained=7
+    n=7     1/1   multisets possible, 0 undecided
+w=7   unconstrained=7   sevenbag=7   witness counts=1111111
+w=8  unconstrained=2
+    n=2     0/21  multisets possible, 0 undecided
+    n=4     1/35  multisets possible, 0 undecided
+w=8   unconstrained=2   sevenbag=4   witness counts=1100011
+w=9  unconstrained=9
+    n=9    21/21  multisets possible, 0 undecided
+w=9   unconstrained=9   sevenbag=9   witness counts=2211111
+w=10  unconstrained=5
+    n=5     0/21  multisets possible, 0 undecided
+    n=10   35/35  multisets possible, 0 undecided
+w=10  unconstrained=5   sevenbag=10  witness counts=2221111
+w=11  unconstrained=11
+    n=11   35/35  multisets possible, 0 undecided
+w=11  unconstrained=11  sevenbag=11  witness counts=2222111
+w=12  unconstrained=3
+    n=3     0/35  multisets possible, 0 undecided
+    n=6     0/7   multisets possible, 0 undecided
+    n=9    21/21  multisets possible, 0 undecided
+w=12  unconstrained=3   sevenbag=9   witness counts=2211111
+w=13  unconstrained=13
+    n=13    6/7   multisets possible, 1 undecided
+w=13  unconstrained=13  sevenbag=13  witness counts=2222221
+w=14  unconstrained=7
+    n=7     0/1   multisets possible, 0 undecided
+    n=14    1/1   multisets possible, 0 undecided
+w=14  unconstrained=7   sevenbag=14  witness counts=2222222
+DONE

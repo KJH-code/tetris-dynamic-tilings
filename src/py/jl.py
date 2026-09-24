@@ -1,4 +1,9 @@
+# 보조정리 M 의 계산 근거: J 와 L 의 열 프로파일 집합이 같다는 것을 열거로 확인한다.
+# 입력: --fast 를 주면 프로파일 비교만 하고 끝낸다 (없으면 폭 4~6 실현 가능성 전수까지, 약 30 분).
+# 출력: J 와 L 의 프로파일 목록과 두 집합이 동일한지 여부 (identical: True 여야 한다).
+# 프로파일이 같으므로 열 카운팅은 J 와 L 을 구별하지 못한다 (구별 불변량이 없는 이유).
 import itertools
+import sys
 
 # ---- orientations, as (dr,dc) cell lists ----
 # J base: (0,0),(0,1),(0,2),(1,0)   -> profile (2,1,1)
@@ -30,6 +35,12 @@ print()
 for prof in sorted(J.keys()):
     print("profile %-10s  J cells %-34s  L cells %s" % (str(prof), str(J[prof][0]), str(L[prof][0])))
 print()
+
+# 보조정리 M 자체는 위에서 끝난다. 아래 실현 가능성 전수는 "열 카운팅이 J 와 L 을
+# 구별하지 못하는 것이 프로파일 수준을 넘어 해의 개수 수준까지 간다" 를 보이는 별개 확인이고
+# 폭 6 R=8 (해 490 개, 조각 12 개) 때문에 30 분쯤 걸린다.
+if "--fast" in sys.argv:
+    sys.exit(0)
 
 # ---- column-count solutions ----
 def colsolutions(profs, w, R, limit=10000):

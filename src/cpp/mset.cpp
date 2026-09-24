@@ -1,3 +1,6 @@
+// 주어진 조각 multiset 으로 퍼펙트 클리어가 가능한지 판정한다 (조각 순서 자유, 하드드롭 전용).
+// 입력: argv[1]=폭 w, argv[2]=I O T S Z J L 순서의 7 자리 개수 (예 1111222).
+// 출력: "w=.. counts=.. n=.. R=.. : PC POSSIBLE" 또는 "... : no PC".
 #include <bits/stdc++.h>
 using namespace std;
 typedef unsigned __int128 bb;
@@ -123,6 +126,13 @@ int main(int argc, char **argv) {
     if ((4*n) % w != 0) { printf("%s : cell count not divisible by w\n", argv[2]); return 0; }
     totclear = 4*n/w;
     hcap = totclear + 4;
+    // 보드 비트폭. bitindex 최대값이 hcap*w-1 이므로 hcap*w <= 128 이어야 한다.
+    // 넘으면 상위 비트가 조용히 잘려 거짓 결과가 나온다 (2026-09-15 감사에서 추가).
+    if (hcap * w > 128) {
+        printf("w=%d counts=%s : REFUSED  hcap*w = %d > 128, board does not fit __int128\n",
+               w, argv[2], hcap * w);
+        return 2;
+    }
     buildorientations();
     bool ok = rec((bb)0, 0);
     printf("w=%d counts=%s n=%d R=%d : %s\n", w, argv[2], n, totclear, ok ? "PC POSSIBLE" : "no PC");

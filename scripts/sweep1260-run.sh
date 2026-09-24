@@ -1,0 +1,173 @@
+#!/bin/bash
+# 1,260 류 × 840 접두사 전수를 시작하거나 이어서 돌린다. 재시작 후 이 한 줄이면 된다.
+# 사용법: ./scripts/sweep1260-run.sh [작업디렉터리]   (기본: $SCRATCH/sweep1260 또는 ./.sweep1260)
+#         ./scripts/sweep1260-run.sh [작업디렉터리] --stop          전부 정지
+#         ./scripts/sweep1260-run.sh [작업디렉터리] --commit-only   커밋 루프만 교체
+#
+# 컨테이너가 회수되면 작업디렉터리는 사라지고 레포의 data/sweep1260/ 만 남는다.
+# 그래서 맨 먼저 레포에서 작업디렉터리로 되돌린다 — 이걸 빼먹으면 끝난 류를 다시 돈다.
+#
+# 세 가지를 띄운다.
+#   1 단계  bag1sweep.sh (상한 8M)         — 류마다 840 접두사
+#   2 단계  미결을 큰 상한으로 확정         — 30 분마다 새 미결을 모아 돌린다
+#   커밋    20 분마다 완료분을 레포로 옮겨 커밋·푸시
+#
+# **1 단계의 FAIL 0 은 결과가 아니다.** 실패는 2 단계에서만 드러난다.
+# 2026-09-18 에 표본 100 개의 1 단계가 FAIL 0 을 냈는데 CAP 641 건 안에 실패 9 건이 있었다.
+set -u
+
+REPO=$(cd "$(dirname "$0")/.." && pwd)
+WORK=${1:-${SCRATCH:-$REPO/.sweep1260}}
+case "$WORK" in --*) WORK=${SCRATCH:-$REPO/.sweep1260};; esac
+BRANCH=${BRANCH:-claude/intelligent-bohr-ejzybx}
+PAR1=${PAR1:-3}   # 1 단계
+PAR2=${PAR2:-1}   # 2 단계
+mkdir -p "$WORK/sweep1260" "$REPO/data/sweep1260"
+
+# --commit-only: 커밋 루프만 다시 띄운다.
+# 커밋 루프만 고쳤을 때 1 단계까지 재시작하면 돌던 류의 .partial 을 버린다
+# (705/840 까지 간 것을 날린 적이 있다). 그럴 때 쓴다.
+ONLY=""
+for a in "$@"; do [ "$a" = "--commit-only" ] && ONLY=commit; done
+
+# --- 중복 실행 방지 ---
+# 두 번 부르면 두 벌이 돌고, 코어를 나눠 쓰느라 전부 느려진다. 같은 bag1 을 두 프로세스가
+# 동시에 처리하면 같은 .partial 에 쓰기까지 한다 (줄 수 가드가 막아주지만 시간은 버린다).
+# 2026-09-20 에 실제로 8 프로세스가 4 코어에서 절반 속도로 돈 적이 있다.
+# 돌고 있는 것을 멈추려면: ./scripts/sweep1260-run.sh --stop
+if [ "${1:-}" = "--stop" ] || [ "${2:-}" = "--stop" ]; then
+  if [ -f "$WORK/run.pids" ]; then
+    while read -r p; do kill "$p" 2>/dev/null; done < "$WORK/run.pids"
+    sleep 2
+    # 보강: bash 가 스크립트를 돌리면 자기 이름을 스크립트 이름으로 바꾼다.
+    # 그래서 `ps -C bash` 로는 1 단계가 안 잡힌다 — 스크립트 이름으로 한 번 더 훑는다.
+    ps -C bag1sweep.sh -o pid= > "$WORK/.k"; while read -r p; do kill "$p" 2>/dev/null; done < "$WORK/.k"
+    ps -C capresolve.sh -o pid= > "$WORK/.k"; while read -r p; do kill "$p" 2>/dev/null; done < "$WORK/.k"
+    sleep 1
+    ps -C xargs -o pid= > "$WORK/.k"; while read -r p; do kill "$p" 2>/dev/null; done < "$WORK/.k"
+    sleep 1
+    ps -C fix4 -o pid= > "$WORK/.k"; while read -r p; do kill "$p" 2>/dev/null; done < "$WORK/.k"
+    rm -f "$WORK/run.pids" "$WORK/.k" "$WORK/commit.pid"
+    echo "정지했다."
+  else
+    echo "$WORK/run.pids 가 없다. 돌고 있는 것이 없거나 다른 작업디렉터리다."
+  fi
+  exit 0
+fi
+if [ "$ONLY" = commit ] && [ -f "$WORK/commit.pid" ]; then
+  cp=$(cat "$WORK/commit.pid")
+  kill "$cp" 2>/dev/null
+  grep -vx "$cp" "$WORK/run.pids" > "$WORK/.p" 2>/dev/null; mv "$WORK/.p" "$WORK/run.pids"
+  echo "기존 커밋 루프 $cp 정지"
+fi
+if [ -z "$ONLY" ] && [ -f "$WORK/run.pids" ]; then
+  alive=0
+  while read -r p; do kill -0 "$p" 2>/dev/null && alive=$((alive+1)); done < "$WORK/run.pids"
+  if [ "$alive" -gt 0 ]; then
+    echo "이미 $alive 개가 돌고 있다 ($WORK/run.pids). 먼저 멈춰라:"
+    echo "    $0 $WORK --stop"
+    exit 1
+  fi
+  rm -f "$WORK/run.pids"
+fi
+
+if [ -z "$ONLY" ]; then
+# --- 복구: 레포에 커밋된 완료분을 작업디렉터리로 되돌린다 ---
+cp -n "$REPO/data/sweep1260"/*.out "$WORK/sweep1260/" 2>/dev/null
+rm -f "$WORK/sweep1260"/*.partial
+echo "복구: 완료 류 $(ls "$WORK/sweep1260"/*.out 2>/dev/null | wc -l) / 1260"
+
+cd "$REPO"
+
+# --- 1 단계 ---
+nohup env PAR=$PAR1 ./scripts/bag1sweep.sh data/bag1-classes-1260.txt \
+      data/bag2-prefixes.txt "$WORK/sweep1260" >> "$WORK/sweep1260.log" 2>&1 &
+echo $! >> "$WORK/run.pids"
+echo "1 단계 시작 (PAR=$PAR1)"
+
+# --- 2 단계: 30 분마다 아직 확정 안 된 미결을 모아 돌린다 ---
+nohup bash -c '
+REPO='"$REPO"'; WORK='"$WORK"'; PAR2='"$PAR2"'
+while true; do
+  sleep 1800
+  touch "$WORK/cap-resolved.out"
+  # 아직 확정 안 된 미결만 추린다
+  grep -H " CAP\| TIMEOUT" "$WORK"/sweep1260/*.out 2>/dev/null \
+    | sed "s#.*/##; s#\.out:# #; s# \(CAP\|TIMEOUT\)\$##" \
+    | while read -r b1 b2; do
+        grep -q "^$b1 $b2 " "$WORK/cap-resolved.out" || echo "$b1 $b2"
+      done > "$WORK/cap-todo.txt"
+  n=$(grep -c . "$WORK/cap-todo.txt")
+  [ "$n" -eq 0 ] && continue
+  echo "$(date +%H:%M) 2 단계: 미결 $n 건"
+  cd "$REPO" && PAR=$PAR2 TMO=3600 ./scripts/capresolve.sh "$WORK/cap-todo.txt" "$WORK/cap-resolved.out" >/dev/null 2>&1
+done' >> "$WORK/stage2.log" 2>&1 &
+echo $! >> "$WORK/run.pids"
+echo "2 단계 루프 시작 (PAR=$PAR2, 30 분 주기)"
+fi
+
+cd "$REPO"
+
+# --- 커밋: 20 분마다 ---
+nohup bash -c '
+REPO='"$REPO"'; WORK='"$WORK"'; BRANCH='"$BRANCH"'
+while true; do
+  cp -n "$WORK"/sweep1260/*.out "$REPO/data/sweep1260/" 2>/dev/null
+  cd "$REPO"
+  n=$(ls data/sweep1260/*.out 2>/dev/null | wc -l)
+  if [ "$n" -gt 0 ]; then
+    ok=$(cat data/sweep1260/*.out | grep -c " OK")
+    fail=$(cat data/sweep1260/*.out | grep -c " FAIL")
+    und=$(cat data/sweep1260/*.out | grep -cE " (CAP|TIMEOUT)")
+    res=$(grep -c . "$WORK/cap-resolved.out" 2>/dev/null || echo 0)
+    rfail=$(grep -c " FAIL " "$WORK/cap-resolved.out" 2>/dev/null || echo 0)
+    {
+      echo "# 1,260 류 × 840 접두사 전수 — 진행 중"
+      echo "# 류 목록 data/bag1-classes-1260.txt (I 위치 내림차순, 어려운 쪽 먼저)"
+      echo "# 이어서 돌리기: ./scripts/sweep1260-run.sh"
+      echo "#"
+      echo "# **1 단계의 FAIL 0 은 결과가 아니다.** 실패는 2 단계에서만 드러난다."
+      echo "#"
+      echo "완료 류          $n / 1260"
+      echo "케이스           $((n*840))"
+      echo "1 단계 OK        $ok"
+      echo "1 단계 FAIL      $fail"
+      echo "1 단계 미결      $und      <- 2 단계 대상"
+      echo "2 단계 확정      $res      (그중 FAIL $rfail)"
+      if [ "$fail" -gt 0 ]; then
+        echo "#"; echo "# 1 단계에서 바로 드러난 실패"
+        grep -H " FAIL" data/sweep1260/*.out | sed "s#data/sweep1260/##; s#\.out:# #; s# FAIL##"
+      fi
+    } > data/sweep1260-summary.out
+    if [ -s "$WORK/cap-resolved.out" ]; then sort "$WORK/cap-resolved.out" > data/sweep1260-stage2.out; fi
+  fi
+  if [ -n "$(git status --porcelain data/sweep1260 data/sweep1260-summary.out data/sweep1260-stage2.out 2>/dev/null)" ]; then
+    git add data/sweep1260 data/sweep1260-summary.out data/sweep1260-stage2.out 2>/dev/null
+    git commit -q -m "data: 1260-class sweep at $n/1260 classes
+
+Stage one: $ok possible, $fail impossible, $und undecided.
+Stage two has settled $res of those, $rfail of them impossible.
+An undecided case is neither a pass nor a failure until stage two
+settles it.
+
+Co-Authored-By: Claude Opus 5 <noreply@anthropic.com>
+Claude-Session: https://claude.ai/code/session_0118FaHdVwXoMn8JUHikzaeY"
+    pushed=no
+    for i in 1 2 3 4 5; do git push -q origin "$BRANCH" 2>>"$WORK/push.err" && { pushed=yes; break; }; sleep $((2**i)); done
+    echo "$(date +%H:%M) committed $n classes, stage2 $res, push=$pushed"
+  fi
+  # 커밋은 됐는데 푸시가 밀린 게 있으면 매 주기마다 다시 시도한다.
+  # 컨테이너가 회수되면 남는 것은 커밋이 아니라 **푸시된 것**이다.
+  behind=$(git log --oneline "origin/$BRANCH..HEAD" 2>/dev/null | wc -l)
+  if [ "$behind" -gt 0 ]; then
+    for i in 1 2 3 4 5; do git push -q origin "$BRANCH" 2>>"$WORK/push.err" && break; sleep $((2**i)); done
+    still=$(git log --oneline "origin/$BRANCH..HEAD" 2>/dev/null | wc -l)
+    echo "$(date +%H:%M) 밀린 커밋 $behind 개 재푸시 -> 남은 $still"
+  fi
+  sleep 1200
+done' >> "$WORK/autocommit.log" 2>&1 &
+echo $! >> "$WORK/run.pids"
+echo $! > "$WORK/commit.pid"
+echo "커밋 루프 시작 (20 분 주기)"
+echo
+echo "로그: $WORK/sweep1260.log  $WORK/stage2.log  $WORK/autocommit.log"

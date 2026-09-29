@@ -2,9 +2,13 @@
 // 입력: argv[1]=도착 수열, argv[2]=상태 상한 (기본 3000000).
 // 출력: "<수열> : PC POSSIBLE | no PC | INCONCLUSIVE (cap)   (states N)".
 //
-// 표가 2^26 슬롯이라 내부 적재율 한계가 TSIZE/10*7 = 46,976,202 다. 이 한계에 걸리면
+// 기본 표가 2^26 슬롯이라 내부 적재율 한계가 TSIZE/10*7 = 46,976,202 다. 이 한계에 걸리면
 // 보고되는 상태 수가 46,976,203 으로 고정되는데, 그 값을 보면 "탐색 실패" 가 아니라
-// "표가 찼다" 로 읽어야 한다. 그때는 표가 두 배인 fix4 로 다시 돌린다.
+// "표가 찼다" 로 읽어야 한다.
+//
+// 그때 fix4 로 다시 돌리는 것은 교차검증이 아니다 — fix4 는 비교 대상인 다른 구현이다.
+// 표를 키운 이 구현으로 다시 돌려야 한다:
+//   g++ -O2 -std=c++17 -DFIX5_TBITS=27 -o /tmp/fix5w src/cpp/fix5.cpp
 #include <bits/stdc++.h>
 using namespace std;
 typedef unsigned __int128 u128;
@@ -91,7 +95,12 @@ int perm[16]; int arrlen;
 // open-addressing table of 64-bit fingerprints.
 // key is 87 bits (board 80 + i 4 + hold 3); we store a 64-bit mix.
 // collision probability over ~4e7 entries is ~1e-4, negligible.
-static const size_t TBITS = 26, TSIZE = (size_t)1 << TBITS, TMASK = TSIZE - 1;
+// 슬롯 수는 컴파일 때 -DFIX5_TBITS=27 로 키울 수 있다 (2^27 슬롯 = 2 GiB, 적재율 한계
+// 93,952,404). fix4 와 표 크기가 같아지므로, 4,700 만 상태를 넘는 수열도 교차검증할 수 있다.
+#ifndef FIX5_TBITS
+#define FIX5_TBITS 26
+#endif
+static const size_t TBITS = FIX5_TBITS, TSIZE = (size_t)1 << TBITS, TMASK = TSIZE - 1;
 vector<u128> tab;
 long long tabcount = 0;
 long long CAP = 3000000; bool capped=false;

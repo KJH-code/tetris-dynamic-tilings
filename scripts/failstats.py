@@ -1,11 +1,16 @@
 #!/usr/bin/env python3
 """1,260 류 스윕의 실패를 집계한다 — 검산 대장의 재현 명령.
 
-사용법: python3 scripts/failstats.py [2단계결과파일]
-        기본 data/sweep1260-stage2.out
+사용법: python3 scripts/failstats.py [2단계결과파일] [탐침결과파일]
+        기본 data/sweep1260-stage2.out, data/probe954.out
 
 **1 단계의 FAIL 0 은 결과가 아니다.** 실패는 2 단계 확정 파일에만 나온다.
 그래서 이 스크립트는 2 단계 파일만 읽는다.
+
+**스윕과 탐침은 서로 다른 모집단이다.** 스윕은 완료된 류에 접두사 840 개를 전수로
+붙이고, 탐침은 나머지 류에 접두사 14 개만 붙인다. 그래서 위쪽 절은 스윕만 집계하고,
+맨 아래 "스윕 ∪ 탐침" 절이 둘을 합집합으로 합쳐 **지금까지 알려진 실패 전체**를 준다.
+비율은 어느 절에서 뽑은 것인지 반드시 같이 적을 것.
 
 bag1 류 목록은 I 위치 내림차순이라 **완료된 부분은 무작위 표본이 아니다.**
 비율을 뽑을 때는 어느 층(I 위치)이 끝났는지 먼저 볼 것 — 2026-09-19 에
@@ -17,6 +22,7 @@ import glob
 from collections import Counter
 
 stage2 = sys.argv[1] if len(sys.argv) > 1 else 'data/sweep1260-stage2.out'
+probe = sys.argv[2] if len(sys.argv) > 2 else 'data/probe954.out'
 classes = 'data/bag1-classes-1260.txt'
 outdir = 'data/sweep1260'
 
@@ -80,3 +86,35 @@ for name, sel in (("조건 만족", lambda b: min(pos(b, 'S'), pos(b, 'Z')) >= 5
     print(f"    {name}: 전체 {len(a):4d}  완료 {len(d):4d}  실패 류 {len(f):3d}   완료분의 I 위치 {ipos}")
     if name == "조건 위반" and f:
         print("      반례:", [(b, f"I={pos(b,'I')}", f"S={pos(b,'S')}", f"Z={pos(b,'Z')}") for b in f])
+
+if not os.path.exists(probe):
+    sys.exit(0)
+
+# 탐침은 접두사 14 개만 붙이므로 여기서 나온 "실패 0" 은 정리가 아니다.
+# 반대로 FAIL 은 확정이다 — 그래서 합집합에 그대로 더할 수 있다.
+pfail = {}
+for line in open(probe):
+    p = line.split()
+    if len(p) >= 4 and p[2] == 'FAIL':
+        pfail[(p[0], p[1])] = p[3]
+
+states = {(a, b): s for (a, b), (v, s) in best.items() if v == 'FAIL'}
+states.update(pfail)
+union = sorted(states)
+
+print()
+print("스윕 ∪ 탐침 — 지금까지 알려진 실패 전체")
+print(f"    스윕 {len(fails)} 건 / {len(failcls)} 류 (완료 류 {len(done)} 개 × 접두사 840 전수)")
+print(f"    탐침 {len(pfail)} 건 / {len(set(a for a, _ in pfail))} 류 "
+      f"(나머지 류 × 접두사 14 개만 — 전수가 아니다)")
+print(f"    겹치는 케이스 {len(set(pfail) & set(k for k in best if best[k][0] == 'FAIL'))} 건 "
+      f"(탐침 대조군)")
+print(f"    합집합 **{len(union)} 건 / {len(set(a for a, _ in union))} 류**")
+nums = sorted(int(s) for s in states.values() if s.isdigit())
+print(f"    상태 수 {nums[0]:,} ~ {nums[-1]:,}")
+print("    끝 글자 :", dict(sorted(Counter(b[-1] for _, b in union).items())))
+print("    조각 집합:", dict(sorted(Counter(''.join(sorted(set(b))) for _, b in union).items())))
+badu = [k for k in union if set(k[1]) not in ({'O', 'S', 'Z', 'J'}, {'O', 'S', 'Z', 'L'})]
+print("    {O,S,Z}+J/L 이 아닌 것:", badu if badu else "없음")
+print("    실패 bag1 의 I 위치:", dict(sorted(
+    Counter(pos(a, 'I') for a in set(a for a, _ in union)).items())))

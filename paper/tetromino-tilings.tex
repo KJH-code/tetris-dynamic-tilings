@@ -700,12 +700,14 @@ that hit the cap, undecided. A capped search is not a negative result.
 
 \subsection*{What the exhaustive computation shows so far}
 
-The sweep over the $1260$ classes is running. We report the parts of it that are
-complete, together with counts of the failures found so far; the latter are as of the
-$305$ classes settled at the time of writing and can only grow. Say that a first bag
-is \emph{late} if $S$ and $Z$ both arrive in position five or later. Exactly $180$ of the $1260$ classes are late, and all of them are now
-settled over all $840$ prefixes, with nothing left undecided: of those $151{,}200$
-cases, $92$ admit no perfect clear, and they fall in $31$ of the $180$ classes.
+The sweep over the $1260$ classes covers $307$ of them over all $840$ prefixes; for the
+remaining $953$ we settled every class against the $14$ prefixes that had produced a
+failure, $13{,}346$ cases with nothing undecided. Counts below are as of that point and
+can only grow, since the $826$ untried prefixes are untested on those $953$ classes.
+Say that a first bag is \emph{late} if $S$ and $Z$ both arrive in position five or
+later. Exactly $180$ of the $1260$ classes are late, and all of them are settled over
+all $840$ prefixes, with nothing left undecided: of those $151{,}200$ cases, $91$ admit
+no perfect clear, and they fall in $31$ of the $180$ classes.
 Arranged by the position of the I piece, the failing classes are
 
 \begin{center}
@@ -741,8 +743,8 @@ $\mathrm{LSOZ}$, $\mathrm{OLSZ}$.
 At the other end, no first bag with the I first has been made to fail: the $72$ late
 classes of that kind are settled over all $840$ prefixes, and the other $288$ were
 tested against the six prefixes that have produced failures, all $1728$ cases possible
-and none undecided. The most expensive settled in $7.9 \times 10^6$ states, an order
-of magnitude below the $3.7$--$5.6 \times 10^7$ the known failures demand. This is a
+and none undecided. The most expensive settled in $7.9 \times 10^6$ states, a factor of
+four below the $3.2$--$5.6 \times 10^7$ the known failures demand. This is a
 probe, not a proof: six of $840$ prefixes is under one percent.
 
 A proof of Theorem~\ref{thm:family} by counting is not merely missing but impossible,
@@ -768,11 +770,24 @@ family of Theorem~\ref{thm:family}: $\mathrm{JTLIOSZ}$ fails on $\mathrm{LOZS}$ 
 $\mathrm{JLTIOSZ}$ succeeds on it, and both have their I fourth.
 
 Of the regularities we proposed for the failing prefixes, one survives: across all
-$94$ failures known to us the prefix is a permutation of $\{O,S,Z\}$ together with one
+$108$ failures known to us the prefix is a permutation of $\{O,S,Z\}$ together with one
 of $J$ or $L$, without exception, which is the shape the mirror lemma forces. Three
 others broke, each having held for every case then available --- that the prefixes end
-in $\mathrm{ZS}$, that they end in $S$ or $Z$ (the endings now stand at $S$ fifty-nine
-times, $Z$ thirty and $O$ five), and that they take only three shapes.
+in $\mathrm{ZS}$, that they end in $S$ or $Z$ (the endings now stand at $S$ sixty
+times, $Z$ forty-three and $O$ five), and that they take only three shapes.
+
+A fourth broke on the $953$ classes probed last. We had spoken of ``the prefixes that
+produce failures'' as though the set were a property of the prefix alone. It is not: the
+failing prefixes depend on the first bag. The class $\mathrm{STIZLOJ}$ fails on
+$\mathrm{OJSZ}$ and $\mathrm{JOSZ}$ and succeeds on the other twelve prefixes tried,
+among them $\mathrm{OJZS}$, $\mathrm{JOZS}$ and $\mathrm{JZOS}$, the three that
+Theorem~\ref{thm:family} kills for every first bag in its family. Nor is the split
+stable under transposition: $\mathrm{STLZJIO}$ fails on $\mathrm{JOSZ}$ while
+$\mathrm{STLZIJO}$, which differs by exchanging the fourth and fifth arrivals, does
+not. Of the $120$ classes beginning $S, T$ we settled $119$ against all $14$ prefixes;
+$12$ cases fail, in $9$ classes, and every failing prefix is $\mathrm{OJSZ}$ or
+$\mathrm{JOSZ}$. The remaining $111$ classes admit a perfect clear on all $14$, so
+these classes form no family of their own.
 
 The most instructive was the lateness condition. Every failing first bag then known
 was late; of a hundred sampled bags, fifteen were late and only three of those failed;

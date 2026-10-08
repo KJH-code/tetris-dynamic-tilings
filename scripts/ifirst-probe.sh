@@ -48,7 +48,12 @@ while read -r b1 b2; do
 done < "$cases" > "$todo"
 echo "남은 $(grep -c . "$todo") / 전체 $(grep -c . "$cases")"
 
-xargs -a "$todo" -n 2 -P "$par" bash -c 'probe_one "$0" "$1"' >> "$out"
+# **`-r` 가 없으면 입력이 비어도 xargs 가 한 번 돈다.** 그러면 `bash -c` 가 인자 없이
+# 실행돼 `$0` 이 셸 이름("bash")이 되고, probe_one 이 `fix4 bash 93000000` 을 때려
+# SIGSEGV(rc139)를 받는다. 그 결과가 `bash  KILLED rc139` 라는 **케이스가 아닌 줄**로
+# 결과 파일에 들어간다 (2026-09-30 에 탐침이 끝난 뒤 재시작에서 실제로 발생).
+# 끝난 탐침을 지킴이가 계속 재시작하는 구조라서 매 재시작마다 한 줄씩 늘어난다.
+xargs -r -a "$todo" -n 2 -P "$par" bash -c 'probe_one "$0" "$1"' >> "$out"
 rm -f "$todo"
 echo "=== 집계 (머리 주석 제외) ==="
 awk '!/^#/{print $3}' "$out" | sort | uniq -c

@@ -129,6 +129,19 @@ search is not a negative result.
 Perfect clears are therefore almost always available, and the openers the community
 memorizes are answers to a search-cost problem, not an existence problem.
 
+Since then a probe over the remaining 953 first-bag classes (14 prefixes each, 13,346
+cases, nothing undecided) and an exhaustive sweep of 307 classes over all 840 prefixes
+have brought the known failures to **108 cases in 45 classes**, needing between `3.2e7`
+and `5.6e7` states. That is a lower bound: 826 of the 840 prefixes were never run on the
+953 probed classes. Within one family the boundary is now exact. For a first bag that is
+any permutation of `T, J, L, O` followed by `I, S, Z` and a second-bag prefix that is a
+permutation of `{J, O, S, Z}`, a perfect clear fails **if and only if** the prefix ends
+in `S` and the `J` precedes the `Z` — all 576 cases settled, 288 by computation and the
+rest by the hold-swap invariance, with the mirror lemma carrying the statement to 1,152.
+Change the prefix alphabet to `{L, O, S, Z}` and the equivalence breaks: the analogous
+condition is necessary but not sufficient, and which prefixes fail depends on the first
+bag. Why the one alphabet is special is open.
+
 ## Model independence
 
 The proofs use only three assumptions:

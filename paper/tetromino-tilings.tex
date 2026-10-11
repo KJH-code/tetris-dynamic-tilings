@@ -734,10 +734,13 @@ One family is completely decided and is the sharpest impossibility we have.
 \begin{theorem}[computer-verified]
 \label{thm:family}
 Let the first bag consist of $T, J, L, O$ in any of the $24$ orders, followed by
-$I, S, Z$, and let the second-bag prefix be one of $\mathrm{JOZS}$, $\mathrm{JZOS}$,
-$\mathrm{OJZS}$. Then no perfect clear exists, in all $72$ cases. Mirroring gives the
-same statement for the tail $I, Z, S$ with the prefixes $\mathrm{LOSZ}$,
-$\mathrm{LSOZ}$, $\mathrm{OLSZ}$.
+$I, S, Z$, and let the second-bag prefix be a permutation of $\{J, O, S, Z\}$. Then no
+perfect clear exists \emph{if and only if} the prefix ends in $S$ and the $J$ precedes
+the $Z$ --- that is, for $\mathrm{JOZS}$, $\mathrm{JZOS}$ and $\mathrm{OJZS}$, and for
+no other. All $576$ cases are settled, $288$ of them by computation and the rest by
+Theorem~\ref{thm:swap}. Mirroring gives the same statement for the tail $I, Z, S$ over
+$\{L, O, S, Z\}$: failure exactly when the prefix ends in $Z$ and the $L$ precedes the
+$S$, namely $\mathrm{LOSZ}$, $\mathrm{LSOZ}$, $\mathrm{OLSZ}$.
 \end{theorem}
 
 At the other end, no first bag with the I first has been made to fail: the $72$ late
@@ -788,6 +791,13 @@ not. Of the $120$ classes beginning $S, T$ we settled $119$ against all $14$ pre
 $12$ cases fail, in $9$ classes, and every failing prefix is $\mathrm{OJSZ}$ or
 $\mathrm{JOSZ}$. The remaining $111$ classes admit a perfect clear on all $14$, so
 these classes form no family of their own.
+
+The rule of Theorem~\ref{thm:family} does not survive a change of alphabet either. Over
+$\{L, O, S, Z\}$, with the tail $I, S, Z$ unchanged --- a region neither the theorem nor
+its mirror image covers --- the same shape of condition bounds the failures without
+determining them: $\mathrm{TJLOISZ}$ and $\mathrm{OTJLISZ}$ both fail on
+$\mathrm{LOZS}$ and $\mathrm{OLZS}$, which end in $S$ with the $L$ before the $Z$, but
+only the second fails on $\mathrm{LZOS}$, which satisfies the condition as well.
 
 The most instructive was the lateness condition. Every failing first bag then known
 was late; of a hundred sampled bags, fifteen were late and only three of those failed;

@@ -131,9 +131,11 @@ memorizes are answers to a search-cost problem, not an existence problem.
 
 Since then a probe over the remaining 953 first-bag classes (14 prefixes each, 13,346
 cases, nothing undecided) and an exhaustive sweep of 307 classes over all 840 prefixes
-have brought the known failures to **108 cases in 45 classes**, needing between `3.2e7`
-and `5.6e7` states. That is a lower bound: 826 of the 840 prefixes were never run on the
-953 probed classes. Within one family the boundary is now exact. For a first bag that is
+and a third sweep that fixes the prefix alphabet have brought the known failures to
+**134 cases in 53 classes**, needing between `3.2e7` and `5.6e7` states. That is a lower
+bound: 826 of the 840 prefixes were never run on the 953 probed classes.
+
+Within one family the boundary is now exact. For a first bag that is
 any permutation of `T, J, L, O` followed by `I, S, Z` and a second-bag prefix that is a
 permutation of `{J, O, S, Z}`, a perfect clear fails **if and only if** the prefix ends
 in `S` and the `J` precedes the `Z` — all 576 cases settled, 288 by computation and the

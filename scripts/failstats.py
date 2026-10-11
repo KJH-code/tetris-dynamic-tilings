@@ -1,15 +1,15 @@
 #!/usr/bin/env python3
 """1,260 류 스윕의 실패를 집계한다 — 검산 대장의 재현 명령.
 
-사용법: python3 scripts/failstats.py [2단계결과파일] [탐침결과파일]
-        기본 data/sweep1260-stage2.out, data/probe954.out
+사용법: python3 scripts/failstats.py [2단계결과파일] [탐침결과파일] [가족결과파일]
+        기본 data/sweep1260-stage2.out, data/probe954.out, data/family.out
 
 **1 단계의 FAIL 0 은 결과가 아니다.** 실패는 2 단계 확정 파일에만 나온다.
 그래서 이 스크립트는 2 단계 파일만 읽는다.
 
-**스윕과 탐침은 서로 다른 모집단이다.** 스윕은 완료된 류에 접두사 840 개를 전수로
+**스윕·탐침·가족 스윕은 서로 다른 모집단이다.** 스윕은 완료된 류에 접두사 840 개를 전수로
 붙이고, 탐침은 나머지 류에 접두사 14 개만 붙인다. 그래서 위쪽 절은 스윕만 집계하고,
-맨 아래 "스윕 ∪ 탐침" 절이 둘을 합집합으로 합쳐 **지금까지 알려진 실패 전체**를 준다.
+가족 스윕은 접두사 알파벳을 고정하고 순열 24 개를 전수한다. 맨 아래 합집합 절이 셋을 합쳐 **지금까지 알려진 실패 전체**를 준다.
 비율은 어느 절에서 뽑은 것인지 반드시 같이 적을 것.
 
 bag1 류 목록은 I 위치 내림차순이라 **완료된 부분은 무작위 표본이 아니다.**
@@ -25,6 +25,7 @@ stage2 = sys.argv[1] if len(sys.argv) > 1 else 'data/sweep1260-stage2.out'
 probe = sys.argv[2] if len(sys.argv) > 2 else 'data/probe954.out'
 classes = 'data/bag1-classes-1260.txt'
 outdir = 'data/sweep1260'
+family = sys.argv[3] if len(sys.argv) > 3 else 'data/family.out'
 
 
 def pos(b1, ch):
@@ -98,17 +99,32 @@ for line in open(probe):
     if len(p) >= 4 and p[2] == 'FAIL':
         pfail[(p[0], p[1])] = p[3]
 
+# 가족 경계 스윕(2026-10-11 완료)은 또 다른 모집단이다 — 접두사 알파벳을 {J,O,S,Z} 와
+# {L,O,S,Z} 로 고정하고 그 순열 24 개를 전수한다. 스윕·탐침이 한 번도 안 본 bag1 류가
+# 여기 들어 있으므로 **합집합에 꼭 더해야 한다.** 2026-10-11 에 이걸 빼먹고
+# "108 건" 을 그대로 쓴 적이 있다 (실제 134 건).
+ffail = {}
+if os.path.exists(family):
+    for line in open(family):
+        p = line.split()
+        if len(p) >= 4 and p[2] == 'FAIL':
+            ffail[(p[0], p[1])] = p[3]
+
 states = {(a, b): s for (a, b), (v, s) in best.items() if v == 'FAIL'}
 states.update(pfail)
+states.update(ffail)
 union = sorted(states)
 
 print()
-print("스윕 ∪ 탐침 — 지금까지 알려진 실패 전체")
+print("스윕 ∪ 탐침 ∪ 가족 — 지금까지 알려진 실패 전체 (계산으로 확정된 것만)")
 print(f"    스윕 {len(fails)} 건 / {len(failcls)} 류 (완료 류 {len(done)} 개 × 접두사 840 전수)")
 print(f"    탐침 {len(pfail)} 건 / {len(set(a for a, _ in pfail))} 류 "
       f"(나머지 류 × 접두사 14 개만 — 전수가 아니다)")
-print(f"    겹치는 케이스 {len(set(pfail) & set(k for k in best if best[k][0] == 'FAIL'))} 건 "
-      f"(탐침 대조군)")
+print(f"    가족 {len(ffail)} 건 / {len(set(a for a, _ in ffail))} 류 "
+      f"(접두사 알파벳 고정, 순열 24 개 전수)")
+swfail = set(k for k in best if best[k][0] == 'FAIL')
+print(f"    겹치는 케이스 {len(set(pfail) & swfail)} 건 (탐침 대조군) + "
+      f"{len(set(ffail) & (swfail | set(pfail)))} 건 (가족 ∩ 스윕·탐침)")
 print(f"    합집합 **{len(union)} 건 / {len(set(a for a, _ in union))} 류**")
 nums = sorted(int(s) for s in states.values() if s.isdigit())
 print(f"    상태 수 {nums[0]:,} ~ {nums[-1]:,}")
